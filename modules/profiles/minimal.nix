@@ -6,6 +6,7 @@
 {
   imports = [
     ../packages
+    ../system
   ];
 
   # Allow unfree packages (required for vscode, etc.)
@@ -13,6 +14,18 @@
 
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # User: dragosc (on all machines)
+  modules.system.users = {
+    enable = true;
+    dragosc = true;
+  };
+
+  # Desktop: KDE Plasma (on all machines)
+  modules.system.desktop = {
+    enable = true;
+    kde = true;
+  };
 
   # IDEs: vscode, neovim
   modules.packages.ide = {

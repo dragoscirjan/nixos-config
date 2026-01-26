@@ -10,9 +10,9 @@
     ../../modules/profiles/minimal.nix
   ];
 
-  # Boot loader - adjust based on your system (UEFI vs BIOS)
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # BIOS/Legacy boot with GRUB
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";  # Adjust if your disk is different (e.g., /dev/vda)
 
   # System basics
   system.stateVersion = "24.11";

@@ -33,6 +33,7 @@ HOSTNAME=$(hostname)
 NEW_HOSTNAME=""
 OVERWRITE=false
 PROFILE=""  # Will be set based on hostname or user choice
+GITHUB_TOKEN=""  # For users with 2FA enabled
 
 # Parse arguments
 parse_args() {
@@ -42,17 +43,31 @@ parse_args() {
                 OVERWRITE=true
                 shift
                 ;;
+            --token)
+                if [[ -n "${2:-}" && ! "$2" =~ ^-- ]]; then
+                    GITHUB_TOKEN="$2"
+                    shift 2
+                else
+                    error "--token requires a GitHub personal access token"
+                fi
+                ;;
             --help|-h)
                 echo "NixOS Configuration Bootstrap Script"
                 echo ""
                 echo "Usage:"
                 echo "  curl -fsSL https://raw.githubusercontent.com/dragoscirjan/nixos-config/main/setup.sh | bash"
                 echo "  curl -fsSL ... | bash -s -- --overwrite"
+                echo "  curl -fsSL ... | bash -s -- --token <GITHUB_TOKEN>"
                 echo "  ./setup.sh [OPTIONS]"
                 echo ""
                 echo "Options:"
-                echo "  --overwrite    Overwrite existing host configuration"
-                echo "  --help, -h     Show this help message"
+                echo "  --overwrite       Overwrite existing host configuration"
+                echo "  --token <TOKEN>   GitHub personal access token (for 2FA users)"
+                echo "  --help, -h        Show this help message"
+                echo ""
+                echo "For GitHub 2FA users:"
+                echo "  Create a token at: https://github.com/settings/tokens"
+                echo "  Required scope: repo (for private repos) or public_repo"
                 exit 0
                 ;;
             *)
@@ -108,6 +123,26 @@ check_nixos() {
     error "This script is intended for NixOS systems only."
   fi
   success "NixOS detected"
+}
+
+# Ensure sudo credentials are cached early (before nix-shell operations)
+ensure_sudo() {
+  info "This script requires sudo privileges for system configuration."
+  info "Please enter your password when prompted..."
+  
+  # Use prompt_read style for consistency with piped execution
+  if ! sudo -v; then
+    error "Failed to authenticate with sudo. Please ensure you have sudo access."
+  fi
+  
+  # Keep sudo timestamp fresh in background (for long-running operations)
+  (while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done) &
+  SUDO_KEEPALIVE_PID=$!
+  
+  # Clean up background process on exit
+  trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null' EXIT
+  
+  success "Sudo access confirmed"
 }
 
 # Ask user to select hostname
@@ -210,17 +245,45 @@ ensure_git() {
 
 # Clone or update the repository
 clone_repository() {
+  local clone_url="$REPO_URL"
+  
+  # If token provided, embed it in URL for HTTPS authentication (2FA users)
+  if [ -n "$GITHUB_TOKEN" ]; then
+    clone_url="${REPO_URL/https:\/\//https:\/\/${GITHUB_TOKEN}@}"
+    info "Using GitHub token for authentication"
+  fi
+
   if [ -d "$CONFIG_DIR" ]; then
     if [ -d "$CONFIG_DIR/.git" ]; then
       info "Repository exists. Pulling latest..."
-      nix-shell -p git --run "git -C '$CONFIG_DIR' pull" || warn "Pull failed, using existing version"
+      
+      # Update remote URL if token provided
+      if [ -n "$GITHUB_TOKEN" ]; then
+        nix-shell -p git --run "git -C '$CONFIG_DIR' remote set-url origin '$clone_url'"
+      fi
+      
+      # Use --ff-only to avoid merge conflicts, fall back gracefully if diverged
+      nix-shell -p git --run "git -C '$CONFIG_DIR' pull --ff-only" 2>/dev/null || {
+        warn "Pull failed (likely divergent branches). Using existing local version."
+        warn "You can manually sync later with: git -C $CONFIG_DIR pull --rebase"
+      }
+      
+      # Reset remote URL to remove token from stored config (security)
+      if [ -n "$GITHUB_TOKEN" ]; then
+        nix-shell -p git --run "git -C '$CONFIG_DIR' remote set-url origin '$REPO_URL'"
+      fi
     else
       error "$CONFIG_DIR exists but is not a git repository. Remove it first."
     fi
   else
     info "Cloning repository to $CONFIG_DIR..."
     mkdir -p "$(dirname "$CONFIG_DIR")"
-    nix-shell -p git --run "git clone '$REPO_URL' '$CONFIG_DIR'"
+    nix-shell -p git --run "git clone '$clone_url' '$CONFIG_DIR'"
+    
+    # Reset remote URL to remove token from stored config (security)
+    if [ -n "$GITHUB_TOKEN" ]; then
+      nix-shell -p git --run "git -C '$CONFIG_DIR' remote set-url origin '$REPO_URL'"
+    fi
   fi
   success "Repository ready at $CONFIG_DIR"
 }
@@ -251,6 +314,15 @@ generate_hardware_config() {
   rm -rf "$temp_dir"
 }
 
+# Detect boot mode (UEFI vs BIOS)
+detect_boot_mode() {
+  if [ -d /sys/firmware/efi ]; then
+    echo "uefi"
+  else
+    echo "bios"
+  fi
+}
+
 # Create host configuration
 create_host_config() {
   local host_dir="$CONFIG_DIR/hosts/$HOSTNAME"
@@ -265,7 +337,20 @@ create_host_config() {
     fi
   fi
 
+  local boot_mode=$(detect_boot_mode)
+  info "Detected boot mode: $boot_mode"
   info "Creating host configuration with $PROFILE profile..."
+
+  local boot_config
+  if [ "$boot_mode" = "uefi" ]; then
+    boot_config="  # UEFI boot with systemd-boot
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;"
+  else
+    boot_config="  # BIOS/Legacy boot with GRUB
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = \"/dev/sda\";  # Adjust if your disk is different (e.g., /dev/vda, /dev/nvme0n1)"
+  fi
 
   cat >"$config_file" <<EOF
 # $HOSTNAME NixOS Configuration
@@ -277,9 +362,7 @@ create_host_config() {
     ../../modules/profiles/$PROFILE.nix
   ];
 
-  # Boot loader - adjust based on your system (UEFI vs BIOS)
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+$boot_config
 
   system.stateVersion = "24.11";
   networking.hostName = "$HOSTNAME";
@@ -345,15 +428,25 @@ setup_symlink() {
   success "Created /etc/nixos -> $CONFIG_DIR"
 }
 
-# Stage changes for flake to see them
-stage_changes() {
-  info "Staging configuration changes for nix flake..."
+# Stage and commit changes for flake to see them
+commit_changes() {
+  info "Committing configuration changes for nix flake..."
   
-  # Git needs to see the files for flake to work
-  # We stage but don't commit - user can decide to commit later
-  nix-shell -p git --run "cd '$CONFIG_DIR' && git add -A"
+  # Git needs files committed for flake to work
+  # Set temporary git config if not set (for fresh installs)
+  # chezmoi will overwrite these later with proper values
+  cd "$CONFIG_DIR"
   
-  success "Changes staged"
+  # Check if git user is configured, if not set temporary values
+  if ! nix-shell -p git --run "git -C '$CONFIG_DIR' config user.email" &>/dev/null; then
+    nix-shell -p git --run "git -C '$CONFIG_DIR' config user.email 'dragos@cirjan.pro'"
+    nix-shell -p git --run "git -C '$CONFIG_DIR' config user.name 'Dragos Cirjan'"
+  fi
+  
+  nix-shell -p git --run "git -C '$CONFIG_DIR' add -A"
+  nix-shell -p git --run "git -C '$CONFIG_DIR' commit -m 'Add $HOSTNAME configuration' --allow-empty" 2>/dev/null || true
+  
+  success "Changes committed locally"
 }
 
 # Apply configuration
@@ -377,6 +470,7 @@ main() {
   echo ""
 
   check_nixos
+  ensure_sudo
   configure_hostname
   ensure_git
   clone_repository
@@ -384,7 +478,7 @@ main() {
   create_host_config
   update_flake
   setup_symlink
-  stage_changes
+  commit_changes
 
   echo ""
   echo "========================================"
