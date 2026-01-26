@@ -13,7 +13,7 @@ in
     minimal = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal terminal (ghostty)";
+      description = "Install minimal terminals (ghostty, alacritty)";
     };
 
     full = mkOption {
@@ -28,6 +28,7 @@ in
       # Minimal terminals
       optionals cfg.minimal [
         ghostty
+        alacritty
       ]
       ++
       # Full terminals (additional)

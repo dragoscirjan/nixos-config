@@ -18,4 +18,7 @@
   system.stateVersion = "24.11";
   
   networking.hostName = "vm-nixos";
+  
+  # VM networking - VirtualBox typically uses NAT by default
+  networking.networkmanager.enable = true;
 }

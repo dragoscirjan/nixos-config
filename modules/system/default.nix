@@ -3,7 +3,8 @@
 
 {
   imports = [
-    ./users.nix
     ./desktop.nix
+    ./flatpak.nix
+    ./users.nix
   ];
 }

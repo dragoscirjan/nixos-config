@@ -27,6 +27,21 @@
     kde = true;
   };
 
+  # Flatpak: Synergy 3.5
+  modules.system.flatpak = {
+    enable = true;
+    packages = [
+      "https://symless.com/synergy/download/package/synergy-personal-v3/flatpak/synergy-3.5.1-linux-noble-x86_64.flatpak"
+    ];
+  };
+
+  # Browsers: chromium
+  modules.packages.browsers = {
+    enable = true;
+    minimal = true;
+    full = false;
+  };
+
   # IDEs: vscode, neovim
   modules.packages.ide = {
     enable = true;
@@ -68,6 +83,20 @@
     git = true;
     jujutsu = true;
     gh = true;
+  };
+
+  # Utilities: flameshot
+  modules.packages.utils = {
+    enable = true;
+    minimal = true;
+    full = false;
+  };
+
+  # Creative: gimp, krita
+  modules.packages.creative = {
+    enable = true;
+    minimal = true;
+    full = false;
   };
 
   # Basic system packages

@@ -3,11 +3,15 @@
 
 {
   imports = [
+    ./browsers.nix
+    ./code-agents.nix
+    ./creative.nix
+    ./customize.nix
     ./ide.nix
     ./languages.nix
+    ./office.nix
     ./terminals.nix
-    ./code-agents.nix
-    ./customize.nix
+    ./utils.nix
     ./vcs.nix
   ];
 }

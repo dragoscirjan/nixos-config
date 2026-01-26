@@ -13,13 +13,13 @@ in
     minimal = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal set of IDEs (vscode, neovim)";
+      description = "Install minimal set of IDEs (vscode, neovim, codeium)";
     };
 
     full = mkOption {
       type = types.bool;
       default = false;
-      description = "Install full set of IDEs (includes JetBrains, Sublime)";
+      description = "Install full set of IDEs (JetBrains suite, helix, cursor, etc.)";
     };
   };
 
@@ -29,13 +29,27 @@ in
       optionals cfg.minimal [
         vscode
         neovim
+        codeium
+        zed
       ]
       ++
       # Full IDEs (additional)
       optionals cfg.full [
+        # JetBrains IDEs (corporate/ultimate versions)
+        jetbrains.pycharm-professional
+        jetbrains.idea-ultimate
         jetbrains.goland
+        jetbrains.clion
+        jetbrains.rust-rover
+        jetbrains.phpstorm
         jetbrains.webstorm
+        # Other editors
         sublime4
+        helix
+        cursor
+        jetbrains.fleet
+        vscode-insiders
+        # TODO: antigravity, kiro - check nixpkgs availability
       ];
   };
 }
