@@ -21,6 +21,11 @@ in
     # Enable Flatpak
     services.flatpak.enable = true;
 
+    # Install flatpak package
+    environment.systemPackages = with pkgs; [
+      flatpak
+    ];
+
     # Add Flatpak packages
     systemd.services."flatpak-install" = {
       wantedBy = [ "multi-user.target" ];
