@@ -6,5 +6,6 @@
     ./desktop.nix
     ./flatpak.nix
     ./users.nix
+    ./network.nix
   ];
 }

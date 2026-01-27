@@ -35,7 +35,7 @@ in
       # Full browsers (additional)
       optionals cfg.full [
         google-chrome
-        zen-browser
+#         zen-browser
         brave
       ];
   };

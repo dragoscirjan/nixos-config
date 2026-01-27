@@ -36,8 +36,8 @@ in
       # Full IDEs (additional)
       optionals cfg.full [
         # JetBrains IDEs (corporate/ultimate versions)
-        jetbrains.pycharm-professional
-        jetbrains.idea-ultimate
+        jetbrains.pycharm
+        jetbrains.idea
         jetbrains.goland
         jetbrains.clion
         jetbrains.rust-rover
@@ -46,10 +46,11 @@ in
         # Other editors
         sublime4
         helix
-        cursor
-        jetbrains.fleet
-        vscode-insiders
-        # TODO: antigravity, kiro - check nixpkgs availability
+        code-cursor
+        kiro
+        antigravity
+        # jetbrains.fleet
+        # vscode-insiders
       ];
   };
 }

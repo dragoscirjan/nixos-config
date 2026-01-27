@@ -34,6 +34,12 @@
       default = [];
       description = "List of UDP ports to open in firewall";
     };
+
+    nameservers = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "List of DNS nameservers";
+    };
   };
 
   config = lib.mkIf config.modules.system.network.enable {
@@ -41,7 +47,7 @@
     networking.networkmanager.enable = true;
     
     # DHCP configuration
-    networking.useDHCP = config.modules.system.network.useDHCP;
+    networking.useDHCP = lib.mkDefault config.modules.system.network.useDHCP;
     
     # Wireless support
     networking.wireless.enable = config.modules.system.network.enableWireless;
@@ -50,6 +56,9 @@
     networking.firewall.enable = config.modules.system.network.firewall;
     networking.firewall.allowedTCPPorts = config.modules.system.network.allowedTCPPorts;
     networking.firewall.allowedUDPPorts = config.modules.system.network.allowedUDPPorts;
+
+    # DNS configuration
+    networking.nameservers = config.modules.system.network.nameservers;
 
     # NetworkManager requires user in networkmanager group (handled in users.nix)
   };

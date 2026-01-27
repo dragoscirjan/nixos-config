@@ -11,6 +11,9 @@
 
   # Allow unfree packages (required for vscode, etc.)
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [
+    "openssl-1.1.1w"
+  ];
 
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -40,9 +43,14 @@
   console.keyMap = "us";
   services.xserver.xkb.layout = "us";
 
-  networking.useDHCP = lib.mkDefault true;
-  networking.wireless.enable = lib.mkDefault true;
-  networking.firewall.enable = lib.mkDefault true;
+  # Network configuration with custom DNS
+  modules.system.network = {
+    enable = true;
+    useDHCP = true;
+    enableWireless = true;
+    firewall = true;
+    nameservers = [ "192.168.86.1" "8.8.8.8" ];
+  };
 
   services.openssh.enable = true;
   services.openssh.settings = {
@@ -62,12 +70,10 @@
     kde = true;
   };
 
-  # Flatpak: Synergy 3.5
+  # Flatpak: no additional packages in minimal profile
   modules.system.flatpak = {
     enable = true;
-    packages = [
-      "https://symless.com/synergy/download/package/synergy-personal-v3/flatpak/synergy-3.5.1-linux-noble-x86_64.flatpak"
-    ];
+    packages = [];
   };
 
   # Browsers: chromium
@@ -141,7 +147,7 @@
   # Containers: podman (minimal)
   virtualisation.podman = {
     enable = true;
-    dockerCompat = false;
+    dockerCompat = true;
     dockerSocket.enable = true;
     defaultNetwork.settings.dns_enabled = true;
   };

@@ -33,9 +33,16 @@ in
         go-task
         mise
         bat
+        autojump
       ]) ++
       (optionals cfg.full [
-        # Add more utilities here for full profile
+        zsh
+        fish
+        nushell
       ]);
+
+    # Autojump shell integration
+    programs.bash.interactiveShellInit = "source ${pkgs.autojump}/share/autojump/autojump.bash";
+    programs.zsh.interactiveShellInit = "source ${pkgs.autojump}/share/autojump/autojump.zsh";
   };
 }
