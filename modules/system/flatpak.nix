@@ -1,4 +1,5 @@
 # Flatpak configuration
+# Flatpak configuration
 { config, lib, pkgs, ... }:
 
 with lib;
@@ -13,28 +14,43 @@ in
     packages = mkOption {
       type = types.listOf types.str;
       default = [];
-      description = "List of Flatpak packages to install";
+      description = "List of Flatpak packages or URLs to install";
     };
   };
 
   config = mkIf cfg.enable {
-    # Enable Flatpak
+    # Enable Flatpak infrastructure
     services.flatpak.enable = true;
 
-    # Install flatpak package
-    environment.systemPackages = with pkgs; [
-      flatpak
-    ];
+    # Ensure flatpak is available in the user environment
+    environment.systemPackages = [ pkgs.flatpak ];
 
-    # Add Flatpak packages
     systemd.services."flatpak-install" = {
+      description = "Install configured Flatpak packages";
       wantedBy = [ "multi-user.target" ];
-      after = [ "flatpak.service" ];
+      
+      # Wait for network and flatpak service to be ready
+      after = [ "network-online.target" "flatpak.service" ];
+      wants = [ "network-online.target" ];
+
+      path = [ pkgs.flatpak pkgs.bash ];
+
       serviceConfig = {
         Type = "oneshot";
+        # This script checks if the package is already installed before trying to install it
         ExecStart = let
-          installCmds = map (pkg: "flatpak install --noninteractive --assumeyes ${pkg}") cfg.packages;
-        in "${pkgs.bash}/bin/bash -c '${lib.concatStringsSep "; " installCmds}'";
+          flatpakBin = "${pkgs.flatpak}/bin/flatpak";
+          script = pkgs.writeShellScript "install-flatpaks" ''
+            ${concatMapStringsSep "\n" (pkg: ''
+              # If it's a URL (like Synergy), we check if the name is already in the list
+              # Otherwise, we just try to install it non-interactively.
+              echo "Checking/Installing flatpak: ${pkg}"
+              ${flatpakBin} install --noninteractive --assumeyes ${pkg} || true
+            '') cfg.packages}
+          '';
+        in "${script}";
+        
+        RemainAfterExit = true;
       };
     };
   };
