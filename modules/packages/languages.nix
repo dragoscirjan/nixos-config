@@ -54,6 +54,7 @@ in
       ++ optionals cfg.bun [ bun ]
       ++ optionals cfg.rust [ rustc cargo rust-analyzer ]
       ++ optionals cfg.python [ python311 ]
-      ++ optionals cfg.full [ deno clang clang-tools llvmPackages.lld ];  # Full clang toolchain
+      ++ optionals cfg.full [ deno clang clang-tools llvmPackages.lld ]  # Full clang toolchain
+      ++ [ gcc make ];  # Build tools for minimal install
   };
 }
