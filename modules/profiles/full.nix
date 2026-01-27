@@ -22,6 +22,22 @@
   # Containers: enable docker (in addition to podman)
   modules.packages.containers.docker = true;
 
+  # Containers: add docker (in addition to podman)
+  environment.systemPackages = with pkgs; [
+    docker
+    docker-compose
+    docker-buildx
+  ];
+  
+  services.docker = {
+    enable = true;
+    enableOnBoot = true;
+  };
+  
+  users.users.dragosc.extraGroups = [ "docker" ];
+  
+  virtualisation.podman.dockerCompat = true;
+
   # Creative: enable full set (adds lunacy, inkscape)
   modules.packages.creative.full = true;
 }

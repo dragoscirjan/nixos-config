@@ -18,11 +18,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    users.groups.dragosc = {};
+
     users.users = mkIf cfg.dragosc {
       dragosc = {
         isNormalUser = true;
         description = "Dragos Cirjan";
-        extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
+        extraGroups = [ "wheel" "networkmanager" "video" "audio" "dragosc" ];
         # Password will be set on first login or via `passwd`
         initialPassword = "changeme";
       };

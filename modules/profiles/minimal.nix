@@ -122,12 +122,7 @@
 
 
 
-  # Containers: podman (minimal), docker (full)
-  modules.packages.containers = {
-    enable = true;
-    podman = true;
-    docker = false;
-  };
+
 
   # Utilities: flameshot
   modules.packages.utils = {
@@ -143,9 +138,21 @@
     full = false;
   };
 
+  # Containers: podman (minimal)
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = false;
+    dockerSocket.enable = true;
+    defaultNetwork.settings.dns_enabled = true;
+  };
+
   # Basic system packages
   environment.systemPackages = with pkgs; [
     curl
     wget
+    podman
+    podman-compose
+    podman-tui
+    skopeo
   ];
 }

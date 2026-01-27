@@ -5,7 +5,6 @@
   imports = [
     ./browsers.nix
     ./code-agents.nix
-    ./containers.nix
     ./creative.nix
     ./customize.nix
     ./fonts.nix

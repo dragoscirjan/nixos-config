@@ -30,7 +30,7 @@ in
         vscode
         neovim
         codeium
-        zed
+        zed-editor
       ]
       ++
       # Full IDEs (additional)
