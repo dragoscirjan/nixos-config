@@ -16,15 +16,26 @@ in
 
     nerdFonts = mkOption {
       type = types.listOf types.str;
-      default = [ "FiraCode" "Inconsolata" "JetBrainsMono" "Monofur" "Roboto" "SauceCodePro" "Ubuntu" "Hasklug" ];
-      description = "List of Nerd Fonts to install (e.g. FiraCode, JetBrainsMono, Hack)";
+      # Use these exact names which exist in pkgs.nerd-fonts
+      default = [ 
+        "fira-code" 
+        "inconsolata" 
+        "jetbrains-mono" 
+        "monofur" 
+        "roboto-mono"    # Changed from 'roboto'
+        "sauce-code-pro" 
+        "ubuntu" 
+        "hasklug" 
+      ];
+      description = "List of Nerd Fonts to install";
     };
   };
 
   config = mkIf cfg.enable {
-    fonts.packages = with pkgs;
-      optionals (cfg.nerdFonts != []) [
-        (nerdfonts.override { fonts = cfg.nerdFonts; })
-      ];
+    fonts.packages = (map (font: pkgs.nerd-fonts.${font}) cfg.nerdFonts)
+      ++ (with pkgs; [
+        noto-fonts
+        noto-fonts-color-emoji
+      ]);
   };
 }

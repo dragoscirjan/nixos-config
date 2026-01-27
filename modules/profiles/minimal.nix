@@ -21,6 +21,41 @@
     dragosc = true;
   };
 
+  # System configuration
+  time.timeZone = "Europe/Bucharest";
+  
+  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_US.UTF-8";
+    LC_IDENTIFICATION = "en_US.UTF-8";
+    LC_MEASUREMENT = "en_US.UTF-8";
+    LC_MONETARY = "en_US.UTF-8";
+    LC_NAME = "en_US.UTF-8";
+    LC_NUMERIC = "en_US.UTF-8";
+    LC_PAPER = "en_US.UTF-8";
+    LC_TELEPHONE = "en_US.UTF-8";
+    LC_TIME = "en_US.UTF-8";
+  };
+
+  console.keyMap = "us";
+  services.xserver.xkb.layout = "us";
+
+  networking.useDHCP = lib.mkDefault true;
+  networking.wireless.enable = lib.mkDefault true;
+  networking.firewall.enable = lib.mkDefault true;
+
+  services.openssh.enable = true;
+  services.openssh.settings = {
+    PermitRootLogin = "prohibit-password";
+    PasswordAuthentication = true;
+    X11Forwarding = true;
+    KbdInteractiveAuthentication = false;
+  };
+
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
+
+
   # Desktop: KDE Plasma (on all machines)
   modules.system.desktop = {
     enable = true;
@@ -83,6 +118,15 @@
     git = true;
     jujutsu = true;
     gh = true;
+  };
+
+
+
+  # Containers: podman (minimal), docker (full)
+  modules.packages.containers = {
+    enable = true;
+    podman = true;
+    docker = false;
   };
 
   # Utilities: flameshot

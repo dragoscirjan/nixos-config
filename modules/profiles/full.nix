@@ -17,6 +17,11 @@
   # Terminals: enable full set (adds wezterm)
   modules.packages.terminals.full = true;
 
+
+
+  # Containers: enable docker (in addition to podman)
+  modules.packages.containers.docker = true;
+
   # Creative: enable full set (adds lunacy, inkscape)
   modules.packages.creative.full = true;
 }

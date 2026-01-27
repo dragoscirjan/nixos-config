@@ -32,8 +32,8 @@ in
     services.desktopManager.plasma6.enable = cfg.kde;
 
     # GNOME
-    services.xserver.displayManager.gdm.enable = cfg.gnome;
-    services.xserver.desktopManager.gnome.enable = cfg.gnome;
+    services.displayManager.gdm.enable = cfg.gnome;
+    services.desktopManager.gnome.enable = cfg.gnome;
 
     # Networking (needed for most desktops)
     networking.networkmanager.enable = true;

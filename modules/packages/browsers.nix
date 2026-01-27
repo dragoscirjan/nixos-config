@@ -28,6 +28,8 @@ in
       # Minimal browsers
       optionals cfg.minimal [
         chromium
+        firefox
+        thunderbird
       ]
       ++
       # Full browsers (additional)

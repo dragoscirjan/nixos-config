@@ -25,14 +25,17 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Minimal utilities
-      optionals cfg.minimal [
+      (optionals cfg.minimal [
         flameshot
-      ]
-      ++
-      # Full utilities (additional)
-      optionals cfg.full [
+        btop
+        fastfetch  # Using fastfetch instead of neofetch/screenfetch
+        fzf
+        go-task
+        mise
+        bat
+      ]) ++
+      (optionals cfg.full [
         # Add more utilities here for full profile
-      ];
+      ]);
   };
 }
