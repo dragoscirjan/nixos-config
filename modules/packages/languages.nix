@@ -40,6 +40,12 @@ in
       description = "Install Python 3.11+";
     };
 
+    lua = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Install Lua programming language";
+    };
+
     full = mkOption {
       type = types.bool;
       default = false;
@@ -53,8 +59,9 @@ in
       ++ optionals cfg.nodejs [ nodejs_24 ]  # Node.js 24 latest patch
       ++ optionals cfg.bun [ bun ]
       ++ optionals cfg.rust [ rustc cargo rust-analyzer ]
-      ++ optionals cfg.python [ python311 ]
-      ++ optionals cfg.full [ deno clang clang-tools llvmPackages.lld ]  # Full clang toolchain
-      ++ [ gcc make ];  # Build tools for minimal install
+       ++ optionals cfg.python [ python311 ]
+       ++ optionals cfg.lua [ lua ]
+       ++ optionals cfg.full [ deno clang clang-tools llvmPackages.lld ]  # Full clang toolchain
+      ++ [ gcc gnumake ];  # Build tools for minimal install
   };
 }
