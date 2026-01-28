@@ -10,22 +10,22 @@ in
   options.modules.packages.utils = {
     enable = mkEnableOption "Utility packages";
 
-    minimal = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal set of utilities (flameshot)";
+      description = "Install basic set of utilities (flameshot)";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
-      description = "Install full set of utilities";
+      description = "Install extended set of utilities";
     };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      (optionals cfg.minimal [
+      (optionals cfg.basic [
         flameshot
         btop
         fastfetch  # Using fastfetch instead of neofetch/screenfetch
@@ -35,7 +35,7 @@ in
         bat
         autojump
       ]) ++
-      (optionals cfg.full [
+      (optionals cfg.extended [
         zsh
         fish
         nushell

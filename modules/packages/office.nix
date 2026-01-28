@@ -10,28 +10,28 @@ in
   options.modules.packages.office = {
     enable = mkEnableOption "Office suite packages";
 
-    minimal = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal office suite (WPS)";
+      description = "Install basic office suite (WPS)";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
-      description = "Install full office suite (LibreOffice)";
+      description = "Install extended office suite (LibreOffice)";
     };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Minimal office
-      optionals cfg.minimal [
+      # Basic office
+      optionals cfg.basic [
         wps-office
       ]
       ++
-      # Full office (additional)
-      optionals cfg.full [
+      # Extended office (additional)
+      optionals cfg.extended [
         libreoffice
       ];
   };

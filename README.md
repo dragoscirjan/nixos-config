@@ -1,6 +1,6 @@
 # nixos-config
 
-Modular NixOS configuration for multiple machines with minimal and full development profiles.
+Modular NixOS configuration for multiple machines with basic and extended development profiles.
 
 ## Quick Install
 
@@ -50,8 +50,8 @@ The `setup.sh` script is self-bootstrapping - it works on a completely fresh Nix
 ### Hostname selection
 
 During setup you'll be asked to select a hostname:
-- `1) vm-nixos` - Virtual machine (minimal profile)
-- `2) tw-nixos` - Workstation (full profile)
+- `1) vm-nixos` - Virtual machine (basic profile)
+- `2) tw-nixos` - Workstation (extended profile)
 - `3) Keep current` - Use current system hostname
 - `4) Custom` - Enter a new hostname
 
@@ -95,10 +95,10 @@ nixos-config/
 ├── setup.sh                    # Quick install script
 ├── flake.nix                   # Flake entry point
 ├── hosts/
-│   ├── vm-nixos/               # VM machine (minimal)
+│   ├── vm-nixos/               # VM machine (basic)
 │   │   ├── configuration.nix   # Host-specific settings
 │   │   └── hardware-configuration.nix  # Auto-generated hardware config
-│   └── tw-nixos/               # Workstation (full)
+│   └── tw-nixos/               # Workstation (extended)
 │       ├── configuration.nix   # Host-specific settings
 │       └── hardware-configuration.nix  # Auto-generated hardware config
 └── modules/
@@ -128,7 +128,7 @@ nixos-config/
 
 ## Profiles
 
-This repository defines two primary profiles for NixOS configurations: `basic` and `extended`. These profiles allow for flexible system setups, from a minimal development environment to a fully-featured workstation.
+This repository defines two primary profiles for NixOS configurations: `basic` and `extended`. These profiles allow for flexible system setups, from a basic development environment to a extendedy-featured workstation.
 
 ### Basic Profile
 
@@ -136,7 +136,7 @@ The `basic` profile establishes a core development environment suitable for most
 
 ### Extended Profile
 
-The `extended` profile builds upon the `basic` profile, adding a comprehensive suite of advanced tools, additional IDEs, and specialized software for a fully-equipped development or creative workstation.
+The `extended` profile builds upon the `basic` profile, adding a comprehensive suite of advanced tools, additional IDEs, and specialized software for a extendedy-equipped development or creative workstation.
 
 ## Installed Packages
 
@@ -332,7 +332,7 @@ modules.system.network = {
 };
 ```
 
-**Default settings (minimal profile):**
+**Default settings (basic profile):**
 - NetworkManager enabled for easy network management
 - DHCP enabled for automatic IP configuration
 - WiFi support enabled
@@ -455,7 +455,7 @@ modules.system.desktop = {
 - **KDE Plasma 6:** Full-featured desktop environment
 - **GNOME:** Modern desktop environment
 
-**Default desktop (minimal profile):** KDE Plasma
+**Default desktop (basic profile):** KDE Plasma
 - Display Manager: SDDM
 - Audio: PipeWire with ALSA and Pulse support
 - Networking: NetworkManager integration

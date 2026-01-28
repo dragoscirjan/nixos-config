@@ -14,24 +14,18 @@
       };
     in
     {
-      nixosConfigurations = {
-        # Minimal install - VM
-        vm-nixos = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./hosts/vm-nixos/configuration.nix
-          ];
-        };
-
-        # Full install - Workstation
-        tw-nixos = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./hosts/tw-nixos/configuration.nix
-          ];
-        };
+    nixosConfigurations = {
+      # Basic install - VM
+      vm-nixos = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./hosts/vm-nixos/configuration.nix ];
       };
+
+      # Extended install - Workstation
+      tw-nixos = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./hosts/tw-nixos/configuration.nix ];
+      };
+    };
     };
 }

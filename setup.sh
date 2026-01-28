@@ -154,8 +154,8 @@ configure_hostname() {
   echo "Current system hostname: $current_hostname"
   echo ""
   echo "Select hostname for this machine:"
-  echo "  1) vm-nixos  - Virtual machine (minimal profile)"
-  echo "  2) tw-nixos  - Workstation (full profile)"
+  echo "  1) vm-nixos  - Virtual machine (basic profile)"
+  echo "  2) tw-nixos  - Workstation (extended profile)"
   echo "  3) Keep current: $current_hostname"
   echo "  4) Enter custom hostname"
   echo ""
@@ -164,18 +164,18 @@ configure_hostname() {
   case "$hostname_choice" in
   1)
     HOSTNAME="vm-nixos"
-    PROFILE="minimal"
+    PROFILE="basic"
     ;;
   2)
     HOSTNAME="tw-nixos"
-    PROFILE="full"
+    PROFILE="extended"
     ;;
   3)
     info "Keeping hostname: $current_hostname"
     # Set profile based on known hostnames
     case "$current_hostname" in
-      vm-nixos) PROFILE="minimal" ;;
-      tw-nixos) PROFILE="full" ;;
+      vm-nixos) PROFILE="basic" ;;
+      tw-nixos) PROFILE="extended" ;;
     esac
     ;;
   4)
@@ -186,8 +186,8 @@ configure_hostname() {
         HOSTNAME="$custom_hostname"
         # Set profile based on known hostnames
         case "$custom_hostname" in
-          vm-nixos) PROFILE="minimal" ;;
-          tw-nixos) PROFILE="full" ;;
+          vm-nixos) PROFILE="basic" ;;
+          tw-nixos) PROFILE="extended" ;;
         esac
       else
         warn "Invalid hostname. Using current: $current_hostname"
@@ -206,16 +206,16 @@ configure_hostname() {
   if [ -z "$PROFILE" ]; then
     echo ""
     echo "Which profile would you like to use?"
-    echo "  1) minimal - Base dev environment (recommended)"
-    echo "  2) full    - Extended with extra IDEs"
+    echo "  1) basic - Base dev environment (recommended)"
+    echo "  2) extended    - Extended with extra IDEs"
     echo ""
     local profile_choice
     profile_choice=$(prompt_read "Enter choice [1/2] (default: 1): " "1")
     
     if [ "$profile_choice" = "2" ]; then
-      PROFILE="full"
+      PROFILE="extended"
     else
-      PROFILE="minimal"
+      PROFILE="basic"
     fi
   fi
 
@@ -262,7 +262,7 @@ clone_repository() {
         nix-shell -p git --run "git -C '$CONFIG_DIR' remote set-url origin '$clone_url'"
       fi
       
-      # Use --ff-only to avoid merge conflicts, fall back gracefully if diverged
+      # Use --ff-only to avoid merge conflicts, fall back graceextendedy if diverged
       nix-shell -p git --run "git -C '$CONFIG_DIR' pull --ff-only" 2>/dev/null || {
         warn "Pull failed (likely divergent branches). Using existing local version."
         warn "You can manually sync later with: git -C $CONFIG_DIR pull --rebase"

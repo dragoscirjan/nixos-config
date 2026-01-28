@@ -10,30 +10,30 @@ in
   options.modules.packages.browsers = {
     enable = mkEnableOption "Browser packages";
 
-    minimal = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal set of browsers (chromium)";
+      description = "Install basic set of browsers (chromium)";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
-      description = "Install full set of browsers (chrome, zen-browser, brave)";
+      description = "Install extended set of browsers (chrome, zen-browser, brave)";
     };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Minimal browsers
-      optionals cfg.minimal [
+      # Basic browsers
+      optionals cfg.basic [
         chromium
         firefox
         thunderbird
       ]
       ++
-      # Full browsers (additional)
-      optionals cfg.full [
+      # Extended browsers (additional)
+      optionals cfg.extended [
         google-chrome
 #         zen-browser
         brave

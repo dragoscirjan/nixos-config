@@ -1,5 +1,5 @@
-# Full Profile
-# Extends minimal with additional IDEs and terminals
+# Extended Profile
+# Extends basic with additional IDEs and terminals
 # Adds: intellij-goland, intellij-webstorm, sublime-text, wezterm
 { config, pkgs, lib, ... }:
 
@@ -8,14 +8,14 @@
     ./basic.nix
   ];
 
-  # Browsers: enable full set (adds chrome, brave) - Zen via Flatpak
-  modules.packages.browsers.full = lib.mkForce true;
+  # Browsers: enable extended set (adds chrome, brave) - Zen via Flatpak
+  modules.packages.browsers.extended = lib.mkForce true;
 
-  # IDEs: enable full set (adds goland, webstorm, sublime)
-  modules.packages.ide.full = lib.mkForce true;
+  # IDEs: enable extended set (adds goland, webstorm, sublime)
+  modules.packages.ide.extended = lib.mkForce true;
 
-  # Terminals: enable full set (adds wezterm)
-  modules.packages.terminals.full = lib.mkForce true;
+  # Terminals: enable extended set (adds wezterm)
+  modules.packages.terminals.extended = lib.mkForce true;
 
 
 
@@ -38,7 +38,7 @@
   
   virtualisation.podman.dockerCompat = true;
 
-  # Flatpak: add Zen Browser and Synergy to full profile
+  # Flatpak: add Zen Browser and Synergy to extended profile
   modules.system.flatpak = {
     enable = true;
     packages = [
@@ -48,8 +48,8 @@
     ];
   };
 
-  # Creative: enable full set (adds lunacy, inkscape)
-  modules.packages.creative.full = lib.mkForce true;
+  # Creative: enable extended set (adds lunacy, inkscape)
+  modules.packages.creative.extended = lib.mkForce true;
 
   # Code Agents: enable all code agents
   modules.packages.code-agents.enable = true;

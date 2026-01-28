@@ -1,4 +1,4 @@
-# VM NixOS Configuration - Minimal Install
+# VM NixOS Configuration - Basic Install
 { config, pkgs, lib, ... }:
 
 {

@@ -10,13 +10,13 @@ in
   options.modules.packages.terminals = {
     enable = mkEnableOption "Terminal emulator packages";
 
-    minimal = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal terminals (ghostty, alacritty)";
+      description = "Install basic terminals (ghostty, alacritty)";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
       description = "Install additional terminals (wezterm)";
@@ -25,14 +25,14 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Minimal terminals
-      optionals cfg.minimal [
+      # Basic terminals
+      optionals cfg.basic [
         ghostty
         alacritty
       ]
       ++
-      # Full terminals (additional)
-      optionals cfg.full [
+      # Extended terminals (additional)
+      optionals cfg.extended [
         wezterm
       ];
   };

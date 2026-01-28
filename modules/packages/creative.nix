@@ -10,29 +10,29 @@ in
   options.modules.packages.creative = {
     enable = mkEnableOption "Creative suite packages";
 
-    minimal = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install minimal set of creative tools (gimp, krita)";
+      description = "Install basic set of creative tools (gimp, krita)";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
-      description = "Install full set of creative tools (lunacy, inkscape)";
+      description = "Install extended set of creative tools (lunacy, inkscape)";
     };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Minimal creative tools
-      optionals cfg.minimal [
+      # Basic creative tools
+      optionals cfg.basic [
         gimp
         krita
       ]
       ++
-      # Full creative tools (additional)
-      optionals cfg.full [
+      # Extended creative tools (additional)
+      optionals cfg.extended [
         lunacy
         inkscape
       ];

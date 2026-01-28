@@ -52,7 +52,7 @@ in
       description = "Install Lua programming language";
     };
 
-    full = mkOption {
+    extended = mkOption {
       type = types.bool;
       default = false;
       description = "Install additional languages (deno, clang toolchain, php, lua)";
@@ -68,7 +68,7 @@ in
        ++ optionals cfg.python [ python311 ]
        ++ optionals cfg.uv [ uv ]
        ++ optionals cfg.lua [ lua ]
-       ++ optionals cfg.full [ deno clang clang-tools llvmPackages.lld ]  # Full clang toolchain
-      ++ [ gcc gnumake ];  # Build tools for minimal install
+       ++ optionals cfg.extended [ deno clang clang-tools llvmPackages.lld ]  # Extended clang toolchain
+      ++ [ gcc gnumake ];  # Build tools for basic install
   };
 }

@@ -7,3 +7,6 @@ result-*
 
 # Ignore flake lock file (regenerated on each machine)
 flake.lock
+
+# NodeJs
+node_modules/

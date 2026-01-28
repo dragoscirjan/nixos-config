@@ -1,4 +1,4 @@
-# TW NixOS Configuration - Full Install
+# TW NixOS Configuration - Extended Install
 { config, pkgs, lib, ... }:
 
 {
