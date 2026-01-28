@@ -5,7 +5,7 @@
 
 {
   imports = [
-    ./minimal.nix
+    ./basic.nix
   ];
 
   # Browsers: enable full set (adds chrome, brave) - Zen via Flatpak
@@ -50,4 +50,7 @@
 
   # Creative: enable full set (adds lunacy, inkscape)
   modules.packages.creative.full = lib.mkForce true;
+
+  # Code Agents: enable all code agents
+  modules.packages.code-agents.enable = true;
 }

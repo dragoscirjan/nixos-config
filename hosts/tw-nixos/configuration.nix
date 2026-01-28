@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     
     # Auto-select profile based on hostname  
-    ../../modules/profiles/full.nix
+    ../../modules/profiles/extended.nix
   ];
 
   # Boot loader - adjust based on your system (UEFI vs BIOS)

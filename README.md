@@ -58,8 +58,8 @@ During setup you'll be asked to select a hostname:
 ### Profile selection
 
 If creating a new host configuration, you'll be asked:
-- `1) minimal` - Base development environment (default)
-- `2) full` - Extended environment with extra IDEs
+- `1) basic` - Base development environment (default)
+- `2) extended` - Extended environment with extra IDEs
 
 ### Running locally
 
@@ -122,32 +122,176 @@ nixos-config/
     │   ├── ssh.nix             # SSH server configuration
     │   └── users.nix           # User accounts and sudo
     └── profiles/
-        ├── minimal.nix         # Base development profile
-        └── full.nix            # Extended profile
+        ├── basic.nix         # Base development profile
+        └── extended.nix            # Extended profile
 ```
 
 ## Profiles
 
-### Minimal Profile
-Base development environment that works on any machine:
-- **IDEs:** vscode, neovim
-- **Languages:** golang, nodejs, bun
-- **Terminals:** ghostty
-- **Code Agents:** opencode
-- **Customization:** chezmoi, oh-my-posh
-- **VCS:** git, jujutsu, gh
+This repository defines two primary profiles for NixOS configurations: `basic` and `extended`. These profiles allow for flexible system setups, from a minimal development environment to a fully-featured workstation.
 
-### Full Profile
-Extends minimal with additional tools:
-- **IDEs:** + intellij-goland, intellij-webstorm, sublime-text
-- **Terminals:** + wezterm
+### Basic Profile
+
+The `basic` profile establishes a core development environment suitable for most tasks. It includes essential tools, utilities, and development dependencies.
+
+### Extended Profile
+
+The `extended` profile builds upon the `basic` profile, adding a comprehensive suite of advanced tools, additional IDEs, and specialized software for a fully-equipped development or creative workstation.
+
+## Installed Packages
+
+This section provides a detailed list of packages installed with each profile, categorized for clarity.
+
+### Browsers
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `chromium`        |      ✅       |        ✅        |
+| `firefox`         |      ✅       |        ✅        |
+| `thunderbird`     |      ✅       |        ✅        |
+| `google-chrome`   |      ❌       |        ✅        |
+| `brave`           |      ❌       |        ✅        |
+
+### Code Agents
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `opencode`        |      ✅       |        ✅        |
+| `claude-code`     |      ❌       |        ✅        |
+| `gemini-cli`      |      ❌       |        ✅        |
+| `codex`           |      ❌       |        ✅        |
+| `copilot-cli`     |      ❌       |        ✅        |
+
+### Containers
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `podman`          |      ✅       |        ✅        |
+| `podman-compose`  |      ✅       |        ✅        |
+| `podman-tui`      |      ✅       |        ✅        |
+| `skopeo`          |      ✅       |        ✅        |
+| `docker-compose`  |      ✅       |        ✅        |
+| `docker`          |      ❌       |        ✅        |
+| `docker-buildx`   |      ❌       |        ✅        |
+
+### Creative
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `gimp`            |      ✅       |        ✅        |
+| `krita`           |      ✅       |        ✅        |
+| `lunacy`          |      ❌       |        ✅        |
+| `inkscape`        |      ❌       |        ✅        |
+
+### Customization
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `chezmoi`         |      ✅       |        ✅        |
+| `oh-my-posh`      |      ✅       |        ✅        |
+
+### Fonts
+
+| Package                     | Basic Profile | Extended Profile |
+|-----------------------------|:-------------:|:----------------:|
+| `fira-code` (Nerd Font)     |      ✅       |        ✅        |
+| `inconsolata` (Nerd Font)   |      ✅       |        ✅        |
+| `jetbrains-mono` (Nerd Font)|      ✅       |        ✅        |
+| `monofur` (Nerd Font)       |      ✅       |        ✅        |
+| `roboto-mono` (Nerd Font)   |      ✅       |        ✅        |
+| `sauce-code-pro` (Nerd Font)|      ✅       |        ✅        |
+| `ubuntu` (Nerd Font)        |      ✅       |        ✅        |
+| `hasklug` (Nerd Font)       |      ✅       |        ✅        |
+| `noto-fonts`                |      ✅       |        ✅        |
+| `noto-fonts-color-emoji`    |      ✅       |        ✅        |
+
+### IDEs
+
+| Package                      | Basic Profile | Extended Profile |
+|------------------------------|:-------------:|:----------------:|
+| `vscode`                     |      ✅       |        ✅        |
+| `neovim`                     |      ✅       |        ✅        |
+| `codeium`                    |      ✅       |        ✅        |
+| `zed-editor`                 |      ✅       |        ✅        |
+| `jetbrains.pycharm`          |      ❌       |        ✅        |
+| `jetbrains.idea`             |      ❌       |        ✅        |
+| `jetbrains.goland`           |      ❌       |        ✅        |
+| `jetbrains.clion`            |      ❌       |        ✅        |
+| `jetbrains.rust-rover`       |      ❌       |        ✅        |
+| `jetbrains.phpstorm`         |      ❌       |        ✅        |
+| `jetbrains.webstorm`         |      ❌       |        ✅        |
+| `sublime4`                   |      ❌       |        ✅        |
+| `helix`                      |      ❌       |        ✅        |
+| `code-cursor`                |      ❌       |        ✅        |
+| `kiro`                       |      ❌       |        ✅        |
+| `antigravity`                |      ❌       |        ✅        |
+
+### Languages
+
+| Package                      | Basic Profile | Extended Profile |
+|------------------------------|:-------------:|:----------------:|
+| `go`                         |      ✅       |        ✅        |
+| `gopls`                      |      ✅       |        ✅        |
+| `nodejs_24`                  |      ✅       |        ✅        |
+| `bun`                        |      ✅       |        ✅        |
+| `rustc`                      |      ✅       |        ✅        |
+| `cargo`                      |      ✅       |        ✅        |
+| `rust-analyzer`              |      ✅       |        ✅        |
+| `python311`                  |      ✅       |        ✅        |
+| `uv`                         |      ✅       |        ✅        |
+| `lua`                        |      ✅       |        ✅        |
+| `gcc`                        |      ✅       |        ✅        |
+| `gnumake`                    |      ✅       |        ✅        |
+| `deno`                       |      ❌       |        ✅        |
+| `clang`                      |      ❌       |        ✅        |
+| `clang-tools`                |      ❌       |        ✅        |
+| `llvmPackages.lld`           |      ❌       |        ✅        |
+
+### Office
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `wps-office`      |      ✅       |        ✅        |
+| `libreoffice`     |      ❌       |        ✅        |
+
+### Terminals
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `ghostty`         |      ✅       |        ✅        |
+| `alacritty`       |      ✅       |        ✅        |
+| `wezterm`         |      ❌       |        ✅        |
+
+### Utilities
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `flameshot`       |      ✅       |        ✅        |
+| `btop`            |      ✅       |        ✅        |
+| `fastfetch`       |      ✅       |        ✅        |
+| `fzf`             |      ✅       |        ✅        |
+| `go-task`         |      ✅       |        ✅        |
+| `mise`            |      ✅       |        ✅        |
+| `bat`             |      ✅       |        ✅        |
+| `autojump`        |      ✅       |        ✅        |
+| `zsh`             |      ❌       |        ✅        |
+| `fish`            |      ❌       |        ✅        |
+| `nushell`         |      ❌       |        ✅        |
+
+### VCS
+
+| Package           | Basic Profile | Extended Profile |
+|-------------------|:-------------:|:----------------:|
+| `git`             |      ✅       |        ✅        |
+| `jujutsu`         |      ✅       |        ✅        |
+| `gh`              |      ✅       |        ✅        |
 
 ## Hosts
 
 | Host | Profile | Description |
 |------|---------|-------------|
-| `vm-nixos` | minimal | Virtual machine |
-| `tw-nixos` | full | Workstation |
+| `vm-nixos` | basic | Virtual machine |
+| `tw-nixos` | extended | Workstation |
 
 ## Usage
 
@@ -328,7 +472,7 @@ modules.system.desktop = {
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/profiles/minimal.nix  # or full.nix
+    ../../modules/profiles/basic.nix  # or extended.nix
   ];
 
   system.stateVersion = "24.11";

@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     
     # Auto-select profile based on hostname
-    ../../modules/profiles/minimal.nix
+    ../../modules/profiles/basic.nix
   ];
 
   # BIOS/Legacy boot with GRUB
