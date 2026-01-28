@@ -75,7 +75,71 @@
     enable = true;
     packages = [];
   };
-...
+
+  # Browsers: chromium
+  modules.packages.browsers = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
+  # IDEs: vscode, neovim
+  modules.packages.ide = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
+  # Languages: golang, nodejs, bun
+  modules.packages.languages = {
+    enable = true;
+    golang = true;
+    nodejs = true;
+    bun = true;
+  };
+
+  # Terminals: ghostty
+  modules.packages.terminals = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
+  # Code agents: opencode
+  modules.packages.code-agents = {
+    enable = true;
+    opencode = true;
+  };
+
+  # Customization: chezmoi, oh-my-posh
+  modules.packages.customize = {
+    enable = true;
+    chezmoi = true;
+    oh-my-posh = true;
+  };
+
+  # Version control: git, jujutsu, gh
+  modules.packages.vcs = {
+    enable = true;
+    git = true;
+    jujutsu = true;
+    gh = true;
+  };
+
+  # Utilities: flameshot
+  modules.packages.utils = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
+  # Creative: gimp, krita
+  modules.packages.creative = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
   # Containers: podman (basic)
   virtualisation.podman = {
     enable = true;
