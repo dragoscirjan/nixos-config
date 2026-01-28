@@ -1,0 +1,4 @@
+"*.nix":
+  - nixpkgs-fmt
+#  - statix check
+

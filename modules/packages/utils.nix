@@ -28,12 +28,19 @@ in
       (optionals cfg.basic [
         flameshot
         btop
-        fastfetch  # Using fastfetch instead of neofetch/screenfetch
+        fastfetch # Using fastfetch instead of neofetch/screenfetch
         fzf
         go-task
         mise
+        nixpkgs-fmt
         bat
         autojump
+        statix
+        ripgrep
+        lazygit
+        yazi
+        fd
+        tree-sitter
       ]) ++
       (optionals cfg.extended [
         zsh

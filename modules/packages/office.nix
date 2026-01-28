@@ -27,7 +27,7 @@ in
     environment.systemPackages = with pkgs;
       # Basic office
       optionals cfg.basic [
-        wps-office
+        wpsoffice
       ]
       ++
       # Extended office (additional)

@@ -13,6 +13,7 @@
     ./office.nix
     ./terminals.nix
     ./utils.nix
+    ./virtual.nix
     ./vcs.nix
   ];
 }

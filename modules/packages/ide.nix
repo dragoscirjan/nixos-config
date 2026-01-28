@@ -44,7 +44,7 @@ in
         jetbrains.phpstorm
         jetbrains.webstorm
         # Other editors
-        sublime4
+        # sublime4  # FIXME: broken - depends on EOL openssl-1.1.1 which fails to build
         helix
         code-cursor
         kiro

@@ -14,29 +14,22 @@
   # IDEs: enable extended set (adds goland, webstorm, sublime)
   modules.packages.ide.extended = lib.mkForce true;
 
+  # Languages: enable extended set (adds clang zig)
+  modules.packages.languages.extended = lib.mkForce true;
+
   # Terminals: enable extended set (adds wezterm)
   modules.packages.terminals.extended = lib.mkForce true;
 
+  # Virtualization: enable docker (in addition to podman)
+  modules.packages.virtual.extended = lib.mkForce true;
 
+  # Virtualization: enable jujutsu, gh (in addition to podman)
+  modules.packages.vcs.extended = lib.mkForce true;
 
-  # Containers: enable docker (in addition to podman)
-#   modules.packages.containers.docker = true;
-
-  # Containers: add docker (in addition to podman)
+  # Additional packages
   environment.systemPackages = with pkgs; [
-    docker
-    docker-compose
-    docker-buildx
+    spotify
   ];
-  
-#   services.docker = {
-#     enable = true;
-#     enableOnBoot = true;
-#   };
-
-#   users.users.dragosc.extraGroups = [ "docker" ];
-  
-  virtualisation.podman.dockerCompat = true;
 
   # Flatpak: add Zen Browser and Synergy to extended profile
   modules.system.flatpak = {
@@ -52,5 +45,19 @@
   modules.packages.creative.extended = lib.mkForce true;
 
   # Code Agents: enable all code agents
-  modules.packages.code-agents.enable = true;
+  modules.packages.code-agents = {
+    enable = true;
+    opencode = true;
+    claude-code = true;
+    gemini-cli = true;
+    codex = true;
+    copilot-cli = true;
+  };
+
+  # Printing: enable CUPS with HP drivers and wireless discovery
+  modules.system.printing = {
+    enable = true;
+    hplip = true; # HP OfficeJet Pro 9010 series driver
+    wireless = true; # Enable network printer discovery via Avahi
+  };
 }
