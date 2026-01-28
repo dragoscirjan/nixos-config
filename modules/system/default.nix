@@ -5,7 +5,8 @@
   imports = [
     ./desktop.nix
     ./flatpak.nix
-    ./users.nix
     ./network.nix
+    ./printing.nix
+    ./users.nix
   ];
 }

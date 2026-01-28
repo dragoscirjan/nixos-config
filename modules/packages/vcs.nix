@@ -10,29 +10,22 @@ in
   options.modules.packages.vcs = {
     enable = mkEnableOption "Version control system packages";
 
-    git = mkOption {
+    basic = mkOption {
       type = types.bool;
       default = true;
-      description = "Install Git";
+      description = "Install basic set of languages (git)";
     };
 
-    jujutsu = mkOption {
+    extended = mkOption {
       type = types.bool;
-      default = true;
-      description = "Install Jujutsu (jj) version control";
-    };
-
-    gh = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install GitHub CLI";
+      default = false;
+      description = "Install additional languages (gh, jujutsu)";
     };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      optionals cfg.git [ git ]
-      ++ optionals cfg.jujutsu [ jujutsu ]
-      ++ optionals cfg.gh [ gh ];
+      optionals cfg.basic [ git ]
+      ++ optionals cfg.extended [ jujutsu gh ];
   };
 }

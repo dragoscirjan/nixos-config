@@ -1,6 +1,6 @@
 # Basic Profile
 # Can be used on any machine - provides base development environment
-# Includes: vscode, neovim, golang, nodejs, bun, ghostty, opencode, chezmoi, oh-my-posh, git, jujutsu, gh
+# Includes: vscode, neovim, golang, nodejs, bun, ghostty, opencode, chezmoi, oh-my-posh, git
 { config, pkgs, lib, ... }:
 
 {
@@ -26,7 +26,7 @@
 
   # System configuration
   time.timeZone = "Europe/Bucharest";
-  
+
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -62,8 +62,6 @@
 
   networking.firewall.allowedTCPPorts = [ 22 ];
 
-
-
   # Desktop: KDE Plasma (on all machines)
   modules.system.desktop = {
     enable = true;
@@ -73,7 +71,7 @@
   # Flatpak: no additional packages in basic profile
   modules.system.flatpak = {
     enable = true;
-    packages = [];
+    packages = [ ];
   };
 
   # Browsers: chromium
@@ -93,9 +91,22 @@
   # Languages: golang, nodejs, bun
   modules.packages.languages = {
     enable = true;
-    golang = true;
-    nodejs = true;
-    bun = true;
+    basic = true;
+    extended = false;
+  };
+
+  # Languages: wpsoffice
+  modules.packages.office = {
+    enable = true;
+    basic = true;
+    extended = false;
+  };
+
+  # Version control: git, jujutsu, gh
+  modules.packages.vcs = {
+    enable = true;
+    basic = true;
+    extended = true; # includes jujutsu and gh
   };
 
   # Terminals: ghostty
@@ -118,14 +129,6 @@
     oh-my-posh = true;
   };
 
-  # Version control: git, jujutsu, gh
-  modules.packages.vcs = {
-    enable = true;
-    git = true;
-    jujutsu = true;
-    gh = true;
-  };
-
   # Utilities: flameshot
   modules.packages.utils = {
     enable = true;
@@ -140,21 +143,16 @@
     extended = false;
   };
 
-  # Containers: podman (basic)
-  virtualisation.podman = {
+  # Virtualization: podman (basic)
+  modules.packages.virtual = {
     enable = true;
-    dockerCompat = true;
-    dockerSocket.enable = true;
-    defaultNetwork.settings.dns_enabled = true;
+    basic = true;
+    extended = false;
   };
 
   # Basic system packages
   environment.systemPackages = with pkgs; [
     curl
     wget
-    podman
-    podman-compose
-    podman-tui
-    skopeo
   ];
 }
