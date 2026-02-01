@@ -10,47 +10,42 @@ in
   options.modules.packages.ide = {
     enable = mkEnableOption "IDE packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic set of IDEs (vscode, neovim, codeium)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install extended set of IDEs (JetBrains suite, helix, cursor, etc.)";
-    };
+    extended = mkEnableOption "Extended IDEs (JetBrains suite, helix, cursor, etc.)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Basic IDEs
-      optionals cfg.basic [
-        vscode
-        neovim
+      # Basic IDEs (always installed when enabled)
+      [
         codeium
+        neovim
+        vscode
         zed-editor
       ]
       ++
-      # Extended IDEs (additional)
+      # Extended IDEs
       optionals cfg.extended [
-        # JetBrains IDEs (corporate/ultimate versions)
-        jetbrains.pycharm
-        jetbrains.idea
-        jetbrains.goland
+        # JetBrains IDEs
+        android-studio
         jetbrains.clion
-        jetbrains.rust-rover
+        jetbrains.goland
+        jetbrains.idea
         jetbrains.phpstorm
+        jetbrains.pycharm
+        jetbrains.rust-rover
         jetbrains.webstorm
         # Other editors
-        # sublime4  # FIXME: broken - depends on EOL openssl-1.1.1 which fails to build
-        helix
-        code-cursor
-        kiro
         antigravity
+        code-cursor
+        helix
+        kiro
         # jetbrains.fleet
         # vscode-insiders
       ];
+
+    # Extended IDEs via Flatpak
+    modules.system.flatpak.packages = mkIf cfg.extended [
+      "com.sublimetext.three" # Sublime Text (flatpak version works, nixpkgs broken due to EOL openssl)
+    ];
   };
 }

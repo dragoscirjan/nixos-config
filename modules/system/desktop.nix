@@ -79,12 +79,55 @@ in
         };
       };
       security.rtkit.enable = true;
+
+      # Disable HDA Intel power save to prevent audio crashes after suspend/idle
+      # Your system has 4 audio devices and power management causes conflicts
+      boot.extraModprobeConfig = ''
+        options snd_hda_intel power_save=0 power_save_controller=N
+      '';
+
+      # PipeWire session suspend timeout and sample rate fixes
+      services.pipewire.extraConfig.pipewire."92-low-latency" = {
+        "context.properties" = {
+          # Disable node suspension to prevent audio device sleep issues
+          "default.clock.rate" = 48000;
+          "default.clock.allowed-rates" = [ 44100 48000 ];
+          "default.clock.quantum" = 1024;
+          "default.clock.min-quantum" = 32;
+          "default.clock.max-quantum" = 2048;
+        };
+      };
+
+      # Wireplumber ALSA device rules to prevent suspend issues
+      services.pipewire.wireplumber.extraConfig."51-alsa-disable-suspend" = {
+        "monitor.alsa.rules" = [
+          {
+            matches = [
+              { "node.name" = "~alsa_output.*"; }
+              { "node.name" = "~alsa_input.*"; }
+            ];
+            actions = {
+              update-props = {
+                # Disable session suspend for ALSA devices
+                "session.suspend-timeout-seconds" = 0;
+                # Increase headroom for stability
+                "api.alsa.headroom" = 1024;
+              };
+            };
+          }
+        ];
+      };
     }
 
     # XDG Portal for KDE
     (mkIf cfg.kde {
       xdg.portal.enable = true;
       xdg.portal.extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+
+      # KDE Platform runtime for Flatpak apps
+      modules.system.flatpak.packages = [
+        "org.kde.Platform/x86_64/6.9"
+      ];
     })
 
     # XDG Portal for GNOME
@@ -106,17 +149,5 @@ in
       };
       services.blueman.enable = true;
     })
-
-    # services.pipewire.extraConfig.pipewire."92-disable-suspend" = {
-    #   "context.properties" = {
-    #     "session.suspend-timeout-seconds" = 0;
-    #   };
-    # };
-    # services.pipewire.extraConfig.pipewire."91-samplerate" = {
-    #   "context.properties" = {
-    #     "default.clock.rate" = 48000;
-    #     "default.clock.allowed-rates" = [ 48000 ];
-    #   };
-    # };
   ]);
 }

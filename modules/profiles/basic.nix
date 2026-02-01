@@ -1,12 +1,44 @@
 # Basic Profile
 # Can be used on any machine - provides base development environment
-# Includes: vscode, neovim, golang, nodejs, bun, ghostty, opencode, chezmoi, oh-my-posh, git
 { config, pkgs, lib, ... }:
 
 {
   imports = [
     ../packages
     ../system
+  ];
+
+  # Enable nix-ld for running dynamically linked binaries (e.g., npx, mise tools)
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # Common libraries needed by precompiled binaries
+    stdenv.cc.cc.lib
+    zlib
+    openssl
+    curl
+    libgcc
+    icu
+    # For Node.js and other tools
+    glib
+    nss
+    nspr
+    atk
+    cups
+    dbus
+    expat
+    libdrm
+    libxkbcommon
+    pango
+    cairo
+    xorg.libX11
+    xorg.libXcomposite
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXrandr
+    xorg.libxcb
+    mesa
+    alsa-lib
   ];
 
   # Allow unfree packages (required for vscode, etc.)
@@ -52,6 +84,7 @@
     nameservers = [ "192.168.86.1" "8.8.8.8" ];
   };
 
+  # SSH Configuration
   services.openssh.enable = true;
   services.openssh.settings = {
     PermitRootLogin = "prohibit-password";
@@ -62,93 +95,31 @@
 
   networking.firewall.allowedTCPPorts = [ 22 ];
 
-  # Desktop: KDE Plasma (on all machines)
+  # Desktop: KDE Plasma
   modules.system.desktop = {
     enable = true;
     kde = true;
   };
 
-  # Flatpak: no additional packages in basic profile
-  modules.system.flatpak = {
-    enable = true;
-    packages = [ ];
+  # Flatpak
+  modules.system.flatpak.enable = true;
+
+  # Packages (basic set - extended options are off by default)
+  modules.packages = {
+    browsers.enable = true;
+    code-agents.enable = true;
+    creative.enable = true;
+    customize.enable = true;
+    ide.enable = true;
+    languages.enable = true;
+    office.enable = true;
+    terminals.enable = true;
+    vcs.enable = true;
+    virtual.enable = true;
   };
 
-  # Browsers: chromium
-  modules.packages.browsers = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # IDEs: vscode, neovim
-  modules.packages.ide = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Languages: golang, nodejs, bun
-  modules.packages.languages = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Languages: wpsoffice
-  modules.packages.office = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Version control: git, jujutsu, gh
-  modules.packages.vcs = {
-    enable = true;
-    basic = true;
-    extended = true; # includes jujutsu and gh
-  };
-
-  # Terminals: ghostty
-  modules.packages.terminals = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Code agents: opencode
-  modules.packages.code-agents = {
-    enable = true;
-    opencode = true;
-  };
-
-  # Customization: chezmoi, oh-my-posh
-  modules.packages.customize = {
-    enable = true;
-    chezmoi = true;
-    oh-my-posh = true;
-  };
-
-  # Utilities: flameshot
-  modules.packages.utils = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Creative: gimp, krita
-  modules.packages.creative = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
-
-  # Virtualization: podman (basic)
-  modules.packages.virtual = {
-    enable = true;
-    basic = true;
-    extended = false;
-  };
+  # VCS: include extended (jujutsu, gh) even in basic profile
+  modules.packages.vcs.extended = true;
 
   # Basic system packages
   environment.systemPackages = with pkgs; [

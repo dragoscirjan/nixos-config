@@ -10,27 +10,17 @@ in
   options.modules.packages.office = {
     enable = mkEnableOption "Office suite packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic office suite (WPS)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install extended office suite (LibreOffice)";
-    };
+    extended = mkEnableOption "Extended office suite (LibreOffice)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Basic office
-      optionals cfg.basic [
+      # Basic office (always installed when enabled)
+      [
         wpsoffice
       ]
       ++
-      # Extended office (additional)
+      # Extended office
       optionals cfg.extended [
         libreoffice
       ];

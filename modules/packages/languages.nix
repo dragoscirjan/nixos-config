@@ -10,45 +10,45 @@ in
   options.modules.packages.languages = {
     enable = mkEnableOption "Programming language packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic set of languages (golang, nodejs, bun, rust, python, uv, lua)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install additional languages (deno, clang toolchain, php, lua)";
-    };
+    extended = mkEnableOption "Extended languages (deno, clang toolchain, zig)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Basic Languages
-      optionals cfg.basic [
+      # Basic languages (always installed when enabled)
+      [
+        # Build tools
+        gcc
+        gnumake
+
+        # Go
         go
         gopls
-        nodejs_24
+
+        # JavaScript/TypeScript
         bun
-        rustc
-        cargo
-        rust-analyzer
+        nodejs_24
+
+        # Lua
+        lua
+
+        # Python
         python311
         uv
-        lua
+
+        # Rust
+        cargo
+        rust-analyzer
+        rustc
       ]
       ++
-      # Extended clang toolchain 
+      # Extended languages
       optionals cfg.extended [
-        deno
         clang
         clang-tools
+        deno
         llvmPackages.lld
         zig
-      ]
-      ++
-      # Build tools for basic install
-      [ gcc gnumake ];
+      ];
   };
 }

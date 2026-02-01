@@ -10,35 +10,28 @@ in
   options.modules.packages.virtual = {
     enable = mkEnableOption "Virtualization packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic virtualization (podman)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install extended virtualization (docker)";
-    };
+    extended = mkEnableOption "Extended virtualization (docker)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      (optionals cfg.basic [
+      # Basic virtualization (always installed when enabled)
+      [
         podman
         podman-compose
         podman-tui
         skopeo
-      ]) ++
-      (optionals cfg.extended [
+      ]
+      ++
+      # Extended virtualization
+      optionals cfg.extended [
         docker
-        docker-compose
         docker-buildx
-      ]);
+        docker-compose
+      ];
 
     # Enable Podman service
-    virtualisation.podman = mkIf cfg.basic {
+    virtualisation.podman = {
       enable = true;
       # ONLY enable dockerCompat if Docker itself is NOT enabled
       # to avoid systemd socket conflicts.
