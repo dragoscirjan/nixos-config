@@ -10,33 +10,27 @@ in
   options.modules.packages.browsers = {
     enable = mkEnableOption "Browser packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic set of browsers (chromium)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install extended set of browsers (chrome, zen-browser, brave)";
-    };
+    extended = mkEnableOption "Extended browsers (brave, chrome, zen via flatpak)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      # Basic browsers
-      optionals cfg.basic [
+      # Basic browsers (always installed when enabled)
+      [
         chromium
         firefox
         thunderbird
       ]
       ++
-      # Extended browsers (additional)
+      # Extended browsers
       optionals cfg.extended [
-        # google-chrome - installed via Flatpak
-        # zen-browser - installed via Flatpak
         brave
       ];
+
+    # Extended browsers via Flatpak
+    modules.system.flatpak.packages = mkIf cfg.extended [
+      "app.zen_browser.zen"
+      "com.google.Chrome"
+    ];
   };
 }

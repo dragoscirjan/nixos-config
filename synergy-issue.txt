@@ -1,0 +1,163 @@
+Synergy 3 Flatpak - Bug Report: TLS Broken on All Non-Ubuntu Flatpak Installations
+====================================================================================
+
+Date: 2026-02-08
+Synergy Version: 3.5.1 (Flatpak, com.symless.synergy)
+Flatpak Commit: a2a22f62f98094a01b564b312f8c201665626878eb486a7ae796edbd0f0b1d4d
+Flatpak Runtime: org.kde.Platform/x86_64/6.9
+Host OS: NixOS 26.05 (Linux 6.12.68 x86_64)
+Host OpenSSL: 3.6.0
+Sandbox OpenSSL: 3.3.5 (provided by KDE Flatpak runtime)
+
+
+Root Cause
+----------
+The `synergy-security` binary (a Rust binary compiled on Ubuntu 13.3.0-6ubuntu2)
+performs a platform check and only supports "Ubuntu". Inside the Flatpak sandbox,
+/etc/os-release reports:
+
+    ID=org.kde.Platform
+    PRETTY_NAME="KDE Flatpak runtime"
+
+This causes synergy-security to exit immediately with:
+
+    "This platform is not supported"
+
+Since synergy-security is responsible for generating TLS certificates, and the
+synergy-service only passes --enable-crypto to synergy-core when a certificate
+exists, TLS encryption is completely broken on every Flatpak installation --
+regardless of the host Linux distribution.
+
+This is not a NixOS-specific issue. Any host running the Flatpak build will
+hit this because the sandbox os-release always identifies as the Flatpak
+runtime (org.kde.Platform, org.freedesktop.Platform, etc.), never as Ubuntu.
+
+
+Impact
+------
+1. TLS encryption cannot be enabled. The "Upgrade TLS" button in the GUI
+   silently fails (synergy-security exits, no cert is generated, no error
+   is shown to the user).
+
+2. Any client with TLS enabled (e.g. a Windows machine) cannot connect to
+   a Flatpak-installed server. The client sends a TLS ClientHello, the server
+   responds with a plaintext Synergy banner, and the client gets:
+     OpenSSL error: "wrong version number"
+   The server logs: "new client is unresponsive"
+
+3. There is no workaround available through the GUI.
+
+
+Detailed Trace
+--------------
+
+### Certificate Generation Failure
+
+synergy-service calls synergy-security to generate certificates:
+
+    var securityBinary = "synergy-security";
+    this.path = import_node_path17.default.resolve(execPath, securityBinary);
+
+synergy-security response inside the Flatpak sandbox:
+
+    $ /app/lib/com.symless.synergy/synergy-security
+    This platform is not supported
+
+Result: no certificate file is created at the configured path:
+    ~/.var/app/com.symless.synergy/config/Synergy/synergyCert.pem
+
+### synergy-service Fails to Enable TLS
+
+The service has the correct logic to pass TLS flags:
+
+    args.push(...["--enable-crypto", "--tls-cert", `${tlsCertificate.pemFilePath}`]);
+
+But this code path is gated on the certificate file existing. Since
+synergy-security fails, no cert exists, and synergy-core is always launched
+without --enable-crypto:
+
+    Actual command launched by synergy-service:
+      synergy-core server -f --no-tray --ipc \
+        -c ~/.var/app/com.symless.synergy/config/Synergy/synergy.conf \
+        --name twnixos-f0a9a5d4 --debug INFO --address 0.0.0.0:24800
+
+    Missing flags: --enable-crypto --tls-cert <path>
+
+### TLS Works When Invoked Manually
+
+Generating a certificate manually and passing the flags directly works:
+
+    $ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem \
+        -days 3650 -nodes -subj "/CN=Synergy"
+    $ cat cert.pem key.pem > synergyCert.pem
+
+    $ synergy-core server -f --no-daemon --no-tray \
+        -c synergy.conf --name twnixos-f0a9a5d4 --debug INFO \
+        --address 0.0.0.0:24800 \
+        --enable-crypto --tls-cert synergyCert.pem
+
+    Output:
+      [2026-02-08T23:42:11] INFO:  using ei screen for wayland
+      [2026-02-08T23:42:11] NOTE:  started server, waiting for clients
+      [2026-02-08T23:42:12] INFO:  accepted secure socket
+      [2026-02-08T23:42:12] INFO:  network encryption protocol: TLSv1.3
+      [2026-02-08T23:42:12] NOTE:  accepted client connection
+
+    synergy-core has full TLS support (links against libssl.so.3).
+    The issue is exclusively in synergy-security failing to generate the cert.
+
+
+Secondary Bug: Auto-Discovery Does Not Add Client to Server Config
+------------------------------------------------------------------
+
+Even when TLS is resolved (either by disabling TLS on the client or by
+manually enabling it on the server), auto-discovery does not add the client
+to synergy.conf.
+
+synergy.conf only contains the server screen with empty links:
+
+    section: screens
+        twnixos-f0a9a5d4:
+            ...
+    end
+
+    section: links
+        twnixos-f0a9a5d4:
+            (empty)
+    end
+
+The client discovers the server and connects, but gets rejected:
+
+    [2026-02-08T23:44:23] NOTE:    accepted client connection
+    [2026-02-08T23:44:23] WARNING: unrecognised client name "dcquack-1463651b", check server config
+    [2026-02-08T23:44:23] NOTE:    disconnecting client "dcquack-1463651b"
+
+This repeats every ~1 second. The service never updates the config to
+include the discovered client.
+
+
+Suggested Fixes
+---------------
+1. synergy-security should not perform host OS detection inside a Flatpak
+   sandbox, or should recognize Flatpak runtime IDs. Certificate generation
+   using OpenSSL is platform-independent -- the platform check is unnecessary
+   for this operation.
+
+2. As a fallback, synergy-service should report an error to the GUI when
+   synergy-security fails, rather than silently leaving TLS disabled.
+
+3. The auto-discovery flow should add discovered clients to synergy.conf
+   or clearly indicate to the user that manual configuration is required.
+
+
+Relevant Files
+--------------
+- Binary:    /app/lib/com.symless.synergy/synergy-security (Rust, Ubuntu-only platform check)
+- Binary:    /app/lib/com.symless.synergy/synergy-service (Node.js compiled, has correct TLS logic)
+- Binary:    /app/lib/com.symless.synergy/synergy-core (C++, full TLS support via libssl.so.3)
+- Config:    ~/.var/app/com.symless.synergy/config/Synergy/db.json
+- Config:    ~/.var/app/com.symless.synergy/config/Synergy/local.json
+- Generated: ~/.var/app/com.symless.synergy/config/Synergy/synergy.conf
+- Cert path: ~/.var/app/com.symless.synergy/config/Synergy/synergyCert.pem (never created)
+- Log:       ~/.var/app/com.symless.synergy/.local/state/Synergy/synergy.log
+- Sandbox:   /etc/os-release -> ID=org.kde.Platform (not Ubuntu)

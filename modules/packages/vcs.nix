@@ -10,22 +10,18 @@ in
   options.modules.packages.vcs = {
     enable = mkEnableOption "Version control system packages";
 
-    basic = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Install basic set of languages (git)";
-    };
-
-    extended = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Install additional languages (gh, jujutsu)";
-    };
+    extended = mkEnableOption "Extended VCS tools (gh, jujutsu)";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
-      optionals cfg.basic [ git ]
-      ++ optionals cfg.extended [ jujutsu gh ];
+      # Basic VCS (always installed when enabled)
+      [ git ]
+      ++
+      # Extended VCS
+      optionals cfg.extended [
+        gh
+        jujutsu
+      ];
   };
 }
