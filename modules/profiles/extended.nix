@@ -31,11 +31,12 @@
     spotify
   ];
 
-  # Flatpak: add Zen Browser and Synergy to extended profile
+  # Flatpak: add Zen Browser, Google Chrome and Synergy to extended profile
   modules.system.flatpak = {
     enable = true;
     packages = [
       "app.zen_browser.zen"
+      "com.google.Chrome"
       "org.kde.Platform/x86_64/6.9"
       "https://symless.com/synergy/download/package/synergy-personal-v3/flatpak/synergy-3.5.1-linux-noble-x86_64.flatpak"
     ];

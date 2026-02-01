@@ -34,8 +34,8 @@ in
       ++
       # Extended browsers (additional)
       optionals cfg.extended [
-        google-chrome
-#         zen-browser
+        # google-chrome - installed via Flatpak
+        # zen-browser - installed via Flatpak
         brave
       ];
   };

@@ -41,6 +41,7 @@ in
         yazi
         fd
         tree-sitter
+        pulseaudio # Provides pactl for PipeWire/PulseAudio control
       ]) ++
       (optionals cfg.extended [
         zsh

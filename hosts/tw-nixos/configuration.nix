@@ -21,6 +21,9 @@
     enable32Bit = true; # For 32-bit applications like Wine/Steam
   };
 
+  # Bluetooth support
+  modules.system.desktop.bluetooth = true;
+
   # System basics
   system.stateVersion = "24.11";
 
