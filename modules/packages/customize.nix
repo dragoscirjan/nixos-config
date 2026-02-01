@@ -26,6 +26,7 @@ in
 
         # File/Directory Utilities
         bat
+        eza
         fd
         fzf
         jq
@@ -43,7 +44,6 @@ in
         # System/Info/Monitoring
         btop
         fastfetch
-        pulseaudio
 
         # Screenshot/Media
         flameshot

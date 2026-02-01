@@ -33,7 +33,7 @@ in
         lua
 
         # Python
-        python311
+        python3
         uv
 
         # Rust

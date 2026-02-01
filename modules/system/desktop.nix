@@ -80,6 +80,11 @@ in
       };
       security.rtkit.enable = true;
 
+      environment.systemPackages = with pkgs; [
+        pavucontrol
+        whisper-cpp # whisper.nvim dependency: provides whisper-stream binary
+      ];
+
       # Disable HDA Intel power save to prevent audio crashes after suspend/idle
       # Your system has 4 audio devices and power management causes conflicts
       boot.extraModprobeConfig = ''
