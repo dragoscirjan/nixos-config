@@ -30,7 +30,17 @@ in
           ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub \
             https://dl.flathub.org/repo/flathub.flatpakrepo
           ${lib.concatMapStringsSep "\n" (pkg:
-            "${pkgs.flatpak}/bin/flatpak install --noninteractive flathub ${pkg} || true"
+            if lib.hasPrefix "http://" pkg || lib.hasPrefix "https://" pkg then
+              ''
+                TMP_FLATPAK=$(mktemp --suffix=.flatpak)
+                ${pkgs.curl}/bin/curl -sL "${pkg}" -o "$TMP_FLATPAK"
+                ${pkgs.flatpak}/bin/flatpak install --system --noninteractive "$TMP_FLATPAK" || true
+                rm -f "$TMP_FLATPAK"
+              ''
+            else if lib.hasSuffix ".flatpak" pkg then
+              "${pkgs.flatpak}/bin/flatpak install --system --noninteractive ${pkg} || true"
+            else
+              "${pkgs.flatpak}/bin/flatpak install --system --noninteractive flathub ${pkg} || true"
           ) cfg.packages}
         '';
       };

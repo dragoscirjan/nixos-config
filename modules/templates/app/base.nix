@@ -147,6 +147,8 @@
     # Terminals
     alacritty
     ghostty
+    kitty
+    tmux
 
     # VCS
     git
