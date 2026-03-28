@@ -7,15 +7,9 @@ let
 in
 {
   # ── Ollama service ─────────────────────────────────────────────────────────
-  # services.ollama.acceleration was removed in nixos-unstable; select the
-  # appropriate package variant instead.
-  services.ollama = {
-    enable = true;
-    package =
-      if cfg.gpuAmd then pkgs.ollama-rocm
-      else if cfg.gpuNvidia then pkgs.ollama-cuda
-      else pkgs.ollama;
-  };
+  # ollama-rocm/ollama-cuda are aliases for the unified ollama package in current
+  # nixpkgs-unstable; just use pkgs.ollama for all variants.
+  services.ollama.enable = true;
 
   # ── AI packages (always) ──────────────────────────────────────────────────
   environment.systemPackages = with pkgs;
@@ -26,10 +20,10 @@ in
       ollama
       whisper-cpp
     ]
-    # AMD GPU extras
+    # AMD GPU extras: ROCm runtime + OpenCL (clr = Common Language Runtime)
     ++ lib.optionals cfg.gpuAmd [
       rocmPackages.rocm-runtime
-      rocmPackages.rocm-opencl-runtime
+      rocmPackages.clr
     ]
     # Nvidia GPU extras
     ++ lib.optionals cfg.gpuNvidia [

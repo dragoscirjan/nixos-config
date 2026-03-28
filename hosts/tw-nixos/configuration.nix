@@ -9,6 +9,8 @@
     ../../modules/templates/app/design.nix
     ../../modules/templates/app/ai.nix
     ../../modules/templates/app/virtualization.nix
+    ../../modules/templates/app/media.nix
+    ../../modules/templates/app/office.nix
     ../../modules/templates/hw/tower.nix
     ../../modules/templates/hw/gpu-amd.nix
   ];
@@ -21,6 +23,14 @@
   networking.hostName = "tw-nixos";
   networking.nameservers = [ "192.168.86.1" "8.8.8.8" ];
   networking.firewall.allowedTCPPorts = [ 22 24800 24802 ];
+
+  # ── Printing: HP network printer discovery ────────────────────────────────
+  services.printing.browsing = true;
+  services.printing.browsed.enable = true;
+  environment.systemPackages = with pkgs; [
+    system-config-printer # printer management GUI
+    hplip # hp-setup tool for HP printer configuration
+  ];
 
   # ── Bluetooth ─────────────────────────────────────────────────────────────
   hardware.bluetooth = {
