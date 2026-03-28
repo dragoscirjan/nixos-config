@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for vm-nixos and tw-nixos";
+  description = "NixOS configuration — vm-nixos, tw-nixos, lp-nixos-mariac";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -8,24 +8,26 @@
   outputs = { self, nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
     in
     {
-    nixosConfigurations = {
-      # Basic install - VM
-      vm-nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ ./hosts/vm-nixos/configuration.nix ];
-      };
+      nixosConfigurations = {
+        # Basic install — VM
+        vm-nixos = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [ ./hosts/vm-nixos/configuration.nix ];
+        };
 
-      # Extended install - Workstation
-      tw-nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ ./hosts/tw-nixos/configuration.nix ];
+        # Extended install — Tower workstation (AMD GPU)
+        tw-nixos = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [ ./hosts/tw-nixos/configuration.nix ];
+        };
+
+        # Laptop — Maria C (Nvidia GPU) — stub, boot TBD
+        lp-nixos-mariac = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [ ./hosts/lp-nixos-mariac/configuration.nix ];
+        };
       };
-    };
     };
 }
