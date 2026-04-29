@@ -1,11 +1,15 @@
 {
-  description = "NixOS configuration — vm-nixos, tw-nixos, lp-nixos-mariac";
+  description = "Nix configuration — NixOS & Linux/Home Manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
     in
@@ -27,6 +31,18 @@
         lp-nixos-mariac = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [ ./hosts/lp-nixos-mariac/configuration.nix ];
+        };
+      };
+
+      homeConfigurations = {
+        # Tower workstation running Fedora (Home Manager only)
+        "tw-fedora" = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
+          };
+          modules = [ ./hosts/tw-fedora/home.nix ];
         };
       };
     };
