@@ -31,6 +31,12 @@
 
     # Snapshots
     grim
+
+    # Window Managers / Headless dev testing
+    sway
+    xorg.xorgserver # Provides Xvfb
+    xvfb-run
+    kdePackages.kwin # Provides kwin_wayland and kwin_x11
   ];
 
   # Synergy KVM software via Flatpak direct download URL
