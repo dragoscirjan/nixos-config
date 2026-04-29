@@ -12,3 +12,4 @@ if [[ "$ACTION" != "switch" && "$ACTION" != "test" ]]; then
 fi
 
 sudo nixos-rebuild $ACTION --flake .#$(hostname)
+
