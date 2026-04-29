@@ -6,6 +6,7 @@
   imports = [
     ../../options.nix
     ../../flatpak.nix
+    ../../remote.nix
   ];
 
   # ── Nix ──────────────────────────────────────────────────────────────────
@@ -192,4 +193,10 @@
       '';
     };
   };
+
+  # ── System Activation ─────────────────────────────────────────────────────
+  # Clear oh-my-posh cache on rebuild to avoid broken Nix store paths
+  system.activationScripts.clearOhMyPoshCache = ''
+    rm -rf /home/dragosc/.cache/oh-my-posh
+  '';
 }
