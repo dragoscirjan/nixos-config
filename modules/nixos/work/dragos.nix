@@ -5,8 +5,6 @@
 {
   imports = [
     ./ide.nix
-    ./languages.nix
-    ./shells.nix
     ./browsers.nix
     ./tools.nix
   ];
@@ -29,4 +27,12 @@
   environment.sessionVariables = {
     PATH = [ "$HOME/.local/bin" ];
   };
+
+  # Autojump integrations (moved from shells.nix)
+  programs.zsh.interactiveShellInit = ''
+    source ${pkgs.autojump}/share/autojump/autojump.zsh
+  '';
+  programs.fish.interactiveShellInit = ''
+    source ${pkgs.autojump}/share/autojump/autojump.fish
+  '';
 }

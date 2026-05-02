@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/templates/app/base.nix
-    ../../modules/templates/app/work/dragos.nix
+    ../../modules/nixos/work/dragos.nix
     ../../modules/templates/app/design.nix
     ../../modules/templates/app/ai.nix
     ../../modules/templates/app/virtualization.nix

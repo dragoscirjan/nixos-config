@@ -2,42 +2,19 @@
 { config, pkgs, lib, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    # VCS / forge CLIs
-    gh # GitHub CLI
-    glab # GitLab CLI
-    forgejo-cli # Forgejo CLI (https://forgejo.org/docs/next/admin/command-line/)
-    jujutsu # jj — modern VCS
-    lazygit # terminal UI for git
-
-    # Task runner / project tooling
-    go-task
-
-    # Nix tooling
-    nixpkgs-fmt
-    statix
-
-    # Language tooling
-    tree-sitter
-
+  environment.systemPackages = (import ../../linux/packages.nix { inherit pkgs; }) ++ (with pkgs; [
     # KVM sharing
     lan-mouse
-
-    # SSL / crypto libs
-    openssl
-
-    # Terminal
-    wezterm
 
     # Snapshots
     grim
 
-    # Window Managers / Headless dev testing
+    # Window Managers / Headless dev testing (GUI dependent)
     sway
     xorg.xorgserver # Provides Xvfb
     xvfb-run
     kdePackages.kwin # Provides kwin_wayland and kwin_x11
-  ];
+  ]);
 
   # Synergy KVM software via Flatpak direct download URL
   modules.flatpak.packages = [
