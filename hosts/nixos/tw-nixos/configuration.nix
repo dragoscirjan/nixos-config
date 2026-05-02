@@ -4,15 +4,15 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/templates/app/base.nix
-    ../../modules/nixos/work/dragos.nix
-    ../../modules/templates/app/design.nix
-    ../../modules/templates/app/ai.nix
-    ../../modules/templates/app/virtualization.nix
-    ../../modules/templates/app/media.nix
-    ../../modules/templates/app/office.nix
-    ../../modules/templates/hw/tower.nix
-    ../../modules/templates/hw/gpu-amd.nix
+    ../../../modules/templates/app/base.nix
+    ../../../modules/nixos/work/dragos.nix
+    ../../../modules/templates/app/design.nix
+    ../../../modules/templates/app/ai.nix
+    ../../../modules/templates/app/virtualization.nix
+    ../../../modules/templates/app/media.nix
+    ../../../modules/templates/app/office.nix
+    ../../../modules/templates/hw/tower.nix
+    ../../../modules/templates/hw/gpu-amd.nix
   ];
 
   # ── Boot: UEFI systemd-boot ───────────────────────────────────────────────

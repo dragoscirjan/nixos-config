@@ -4,8 +4,8 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/templates/app/base.nix
-    ../../modules/nixos/work/dragos.nix
+    ../../../modules/templates/app/base.nix
+    ../../../modules/nixos/work/dragos.nix
   ];
 
   # ── Boot: BIOS/Legacy GRUB ────────────────────────────────────────────────
