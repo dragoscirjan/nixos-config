@@ -5,11 +5,11 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/templates/app/base.nix
-    ../../modules/templates/app/office.nix
-    ../../modules/templates/app/media.nix
-    ../../modules/templates/hw/laptop.nix
-    ../../modules/templates/hw/gpu-nvidia.nix
+    ../../../modules/templates/app/base.nix
+    ../../../modules/templates/app/office.nix
+    ../../../modules/templates/app/media.nix
+    ../../../modules/templates/hw/laptop.nix
+    ../../../modules/templates/hw/gpu-nvidia.nix
   ];
 
   # ── Boot: TBD (fill after nixos-generate-config on target hardware) ───────
