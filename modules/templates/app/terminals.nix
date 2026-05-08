@@ -1,17 +1,16 @@
-# Design template — image editing, vector graphics, 3D
 { pkgs, isHomeManager ? false, ... }:
 
 let
   sharedPackages = with pkgs; [
-    blender
-    gimp
-    inkscape
-    krita
-    lunacy
+    alacritty
+    kitty
+    wezterm
   ];
 in
-if isHomeManager then {
+{
+  imports = [ ./terminals-basic.nix ];
+} // (if isHomeManager then {
   home.packages = sharedPackages;
 } else {
   environment.systemPackages = sharedPackages;
-}
+})

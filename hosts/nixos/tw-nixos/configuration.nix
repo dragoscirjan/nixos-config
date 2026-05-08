@@ -4,16 +4,25 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../../modules/templates/app/base.nix
-    ../../../modules/nixos/work/dragos.nix
+    ../../../modules/nixos/common.nix
+    ../../../modules/templates/app/ide.nix
+    ../../../modules/templates/app/browsers.nix
+    ../../../modules/templates/app/languages.nix
+    ../../../modules/templates/app/terminals.nix
+    ../../../modules/templates/dev/tuikit.nix
+    ../../../modules/nixos/remote-control.nix
     ../../../modules/templates/app/design.nix
-    ../../../modules/templates/app/ai.nix
+    ../../../modules/templates/app/ai-llm.nix
     ../../../modules/templates/app/virtualization.nix
     ../../../modules/templates/app/media.nix
     ../../../modules/templates/app/office.nix
     ../../../modules/templates/hw/tower.nix
     ../../../modules/templates/hw/gpu-amd.nix
+    ../../../modules/nixos/ai-mcps.nix
   ];
+
+  # ── Developer Projects ────────────────────────────────────────────────────
+  devProjects.mcpTuikit = true;
 
   # ── Boot: UEFI systemd-boot ───────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;

@@ -3,6 +3,8 @@
 {
   imports = [
     ../../../modules/linux/home.nix
+    ../../../modules/templates/app/ide-basic.nix
+    ../../../modules/templates/app/languages-basic.nix
   ];
 
   home.username = "dragosc";

@@ -1,14 +1,12 @@
 # Work/IDE template — editors and IDEs
-{ config, pkgs, lib, ... }:
+{ pkgs, isHomeManager ? false, ... }:
 
-{
-  environment.systemPackages = with pkgs; [
+let
+  sharedPackages = with pkgs; [
     # Text editors
     codeium
     helix
-    neovim
     vscode
-    zed-editor
 
     # Extended editors / AI-assisted
     antigravity # antigravity (formerly Cursor-community package)
@@ -25,9 +23,16 @@
     jetbrains.rust-rover
     jetbrains.webstorm
   ];
+in
+{
+  imports = [ ./ide-basic.nix ];
+} // (if isHomeManager then {
+  home.packages = sharedPackages;
+} else {
+  environment.systemPackages = sharedPackages;
 
   # Sublime Text via Flatpak (nixpkgs build broken due to EOL openssl)
   modules.flatpak.packages = [
     "com.sublimetext.three"
   ];
-}
+})

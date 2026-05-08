@@ -1,13 +1,9 @@
-# Design template — image editing, vector graphics, 3D
 { pkgs, isHomeManager ? false, ... }:
 
 let
   sharedPackages = with pkgs; [
-    blender
-    gimp
-    inkscape
-    krita
-    lunacy
+    ghostty
+    tmux
   ];
 in
 if isHomeManager then {

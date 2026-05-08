@@ -25,14 +25,17 @@
       nixosConfigurations = {
         vm-nixos = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
+          specialArgs = { isHomeManager = false; };
           modules = [ ./hosts/nixos/vm-nixos/configuration.nix ];
         };
         tw-nixos = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
+          specialArgs = { isHomeManager = false; };
           modules = [ ./hosts/nixos/tw-nixos/configuration.nix ];
         };
         lp-nixos-mariac = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
+          specialArgs = { isHomeManager = false; };
           modules = [ ./hosts/nixos/lp-nixos-mariac/configuration.nix ];
         };
       };
@@ -41,26 +44,37 @@
       homeConfigurations = {
         "dragosc@tw-fedora" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-fedora/home.nix ];
         };
         "dragosc@tw-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-ubuntu/home.nix ];
         };
         "dragosc@tw-omarchy" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-omarchy/home.nix ];
         };
         "dragosc@wsl-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/wsl-ubuntu/home.nix ];
+        };
+        "dragosc@wsl-fedora" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
+          modules = [ ./hosts/linux/wsl-fedora/home.nix ];
         };
         "dragosc@vm-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/vm-ubuntu/home.nix ];
         };
         "dragosc@vm-fedora" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/vm-fedora/home.nix ];
         };
       };
@@ -69,6 +83,7 @@
       darwinConfigurations = {
         "Dragoss-MBP" = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
+          specialArgs = { isHomeManager = false; };
           modules = [ ./hosts/darwin/Dragoss-MBP.lan/configuration.nix ];
         };
       };

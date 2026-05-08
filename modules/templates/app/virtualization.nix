@@ -1,7 +1,24 @@
 # Virtualization template — Docker, Podman, libvirt/QEMU
-{ config, pkgs, lib, ... }:
+{ pkgs, isHomeManager ? false, ... }:
 
-{
+let
+  sharedPackages = with pkgs; [
+    docker
+    docker-buildx
+    docker-compose
+    podman
+    podman-compose
+    podman-tui
+    qemu
+    skopeo
+    virt-manager
+  ];
+in
+if isHomeManager then {
+  home.packages = sharedPackages;
+} else {
+  environment.systemPackages = sharedPackages;
+
   # ── Docker ────────────────────────────────────────────────────────────────
   virtualisation.docker = {
     enable = true;
@@ -21,17 +38,4 @@
 
   # ── User groups ───────────────────────────────────────────────────────────
   users.users.dragosc.extraGroups = [ "docker" "libvirtd" ];
-
-  # ── Packages ──────────────────────────────────────────────────────────────
-  environment.systemPackages = with pkgs; [
-    docker
-    docker-buildx
-    docker-compose
-    podman
-    podman-compose
-    podman-tui
-    qemu
-    skopeo
-    virt-manager
-  ];
 }
