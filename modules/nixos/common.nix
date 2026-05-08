@@ -4,9 +4,12 @@
 
 {
   imports = [
-    ../../options.nix
-    ../../flatpak.nix
-    ../../remote.nix
+    ../options.nix
+    ./project-options.nix
+    ../flatpak.nix
+    ../templates/app/browsers-basic.nix
+    ../templates/app/terminals-basic.nix
+    ../templates/app/shells.nix
   ];
 
   # ── Nix ──────────────────────────────────────────────────────────────────
@@ -36,7 +39,6 @@
     libdrm
     libxkbcommon
     pango
-    cairo
     xorg.libX11
     xorg.libXcomposite
     xorg.libXdamage
@@ -111,92 +113,10 @@
   ];
 
   # ── Base packages ─────────────────────────────────────────────────────────
-  environment.systemPackages = with pkgs; [
-    # Network
-    curl
-    wget
-
-    # File/directory utilities
-    bat
-    eza
-    fd
-    fzf
-    ripgrep
-    tree
-    yazi
-    jq
-    yq
-
-    # Shell environment
-    autojump
-    chezmoi
-    mise
-    oh-my-posh
-
-    # System monitoring
-    btop
-    fastfetch
-
-    # Screenshot / audio control
-    flameshot
-    pavucontrol
-
-    # Browsers
-    firefox
-    chromium
-
-    # Terminals
-    alacritty
-    ghostty
-    kitty
-    tmux
-
-    # VCS
-    git
-  ];
-
-  # autojump shell integration (bash — other shells handled in work/shells.nix)
-  programs.bash.interactiveShellInit = ''
-    source ${pkgs.autojump}/share/autojump/autojump.bash
-  '';
+  environment.systemPackages = 
+    (import ../common/git.nix { inherit pkgs; }) ++ 
+    (import ../common/common.nix { inherit pkgs; });
 
   # ── Fonts ─────────────────────────────────────────────────────────────────
-  fonts.packages = (map (f: pkgs.nerd-fonts.${f}) [
-    "fira-code"
-    "jetbrains-mono"
-    "monofur"
-    "roboto-mono"
-    "sauce-code-pro"
-    "ubuntu"
-    "hasklug"
-    "inconsolata"
-  ]) ++ (with pkgs; [
-    noto-fonts
-    noto-fonts-color-emoji
-  ]);
-
-  # ── chezmoi: init dotfiles on first activation ────────────────────────────
-  # Runs once as user dragosc; idempotent (chezmoi init is a no-op if already initialised).
-  # Switch to SSH remote later by running: chezmoi cd && git remote set-url origin git@github.com:dragoscirjan/dotfiles
-  systemd.user.services."chezmoi-init" = {
-    description = "Initialise chezmoi dotfiles";
-    wantedBy = [ "default.target" ];
-    after = [ "network-online.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "chezmoi-init" ''
-        if [ ! -d "$HOME/.local/share/chezmoi/.git" ]; then
-          ${pkgs.chezmoi}/bin/chezmoi init https://github.com/dragoscirjan/dotfiles
-        fi
-        ${pkgs.chezmoi}/bin/chezmoi apply --no-tty
-      '';
-    };
-  };
-
-  # ── System Activation ─────────────────────────────────────────────────────
-  # Clear oh-my-posh cache on rebuild to avoid broken Nix store paths
-  system.activationScripts.clearOhMyPoshCache = ''
-    rm -rf /home/dragosc/.cache/oh-my-posh
-  '';
+  fonts.packages = import ../common/fonts.nix { inherit pkgs; };
 }

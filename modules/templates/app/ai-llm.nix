@@ -1,17 +1,15 @@
-# Design template — image editing, vector graphics, 3D
+# AI template — extended (includes basic AI CLI tools + GUI like lmstudio)
 { pkgs, isHomeManager ? false, ... }:
 
 let
   sharedPackages = with pkgs; [
-    blender
-    gimp
-    inkscape
-    krita
-    lunacy
+    lmstudio
   ];
 in
-if isHomeManager then {
+{
+  imports = [ ./ai-llm-basic.nix ];
+} // (if isHomeManager then {
   home.packages = sharedPackages;
 } else {
   environment.systemPackages = sharedPackages;
-}
+})

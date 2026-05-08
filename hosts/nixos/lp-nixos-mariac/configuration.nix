@@ -5,7 +5,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../../modules/templates/app/base.nix
+    ../../../modules/nixos/common.nix
     ../../../modules/templates/app/office.nix
     ../../../modules/templates/app/media.nix
     ../../../modules/templates/hw/laptop.nix

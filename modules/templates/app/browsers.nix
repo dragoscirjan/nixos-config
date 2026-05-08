@@ -1,19 +1,20 @@
-# Media template — video players + Spotify via Flatpak
+# Work/Browsers template — additional browsers beyond base
 { pkgs, isHomeManager ? false, ... }:
 
 let
   sharedPackages = with pkgs; [
-    celluloid
-    mpv
-    vlc
+    brave
   ];
 in
-if isHomeManager then {
+{
+  imports = [ ./browsers-basic.nix ];
+} // (if isHomeManager then {
   home.packages = sharedPackages;
 } else {
   environment.systemPackages = sharedPackages;
 
   modules.flatpak.packages = [
-    "com.spotify.Client"
+    "com.google.Chrome"
+    "app.zen_browser.zen"
   ];
-}
+})
