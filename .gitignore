@@ -10,3 +10,4 @@ flake.lock
 
 # NodeJs
 node_modules/
+.web_stash.db
