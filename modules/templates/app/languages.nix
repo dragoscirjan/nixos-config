@@ -15,6 +15,7 @@ let
     # Go
     go
     gopls
+    hugo
 
     # JavaScript / TypeScript
     bun
