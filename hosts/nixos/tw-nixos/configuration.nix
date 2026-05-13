@@ -16,6 +16,7 @@
     ../../../modules/templates/app/virtualization.nix
     ../../../modules/templates/app/media.nix
     ../../../modules/templates/app/office.nix
+    ../../../modules/templates/app/gaming.nix
     ../../../modules/templates/hw/tower.nix
     ../../../modules/templates/hw/gpu-amd.nix
     ../../../modules/nixos/ai-mcps.nix

@@ -5,6 +5,8 @@ let
   sharedPackages = with pkgs; [
     steam
     wine
+
+    openttd
   ];
 in
 if isHomeManager then {

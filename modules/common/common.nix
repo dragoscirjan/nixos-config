@@ -29,4 +29,19 @@
   # Screenshot / audio control
   flameshot
   pavucontrol
+
+  # Archiving
+  zip
+  unzip
+  p7zip
+  gzip
+  bzip2
+  xz
+  zstd
+  gnutar
+  pigz
+  lz4
+  rar
+  unar
+
 ]
