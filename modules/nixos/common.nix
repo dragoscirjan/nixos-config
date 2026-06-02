@@ -20,6 +20,18 @@
     "openssl-1.1.1w"
   ];
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      rustdesk = prev.rustdesk.overrideAttrs (oldAttrs: {
+        cargoDeps = oldAttrs.cargoDeps.overrideAttrs (oldCargoDepsAttrs: {
+          vendorStaging = oldCargoDepsAttrs.vendorStaging.overrideAttrs (oldVendorStagingAttrs: {
+            outputHash = "sha256-M+TGzKwkyviRF4swPDIKlRUHl+JjV0o5DZ/VLaKeF3w=";
+          });
+        });
+      });
+    })
+  ];
+
   # ── nix-ld (run pre-built binaries: mise tools, npx, etc.) ───────────────
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -113,8 +125,8 @@
   ];
 
   # ── Base packages ─────────────────────────────────────────────────────────
-  environment.systemPackages = 
-    (import ../common/git.nix { inherit pkgs; }) ++ 
+  environment.systemPackages =
+    (import ../common/git.nix { inherit pkgs; }) ++
     (import ../common/common.nix { inherit pkgs; });
 
   # ── Fonts ─────────────────────────────────────────────────────────────────
