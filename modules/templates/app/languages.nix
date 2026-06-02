@@ -6,7 +6,7 @@ let
     tree-sitter
 
     # C/C++
-    gcc
+    (pkgs.lib.hiPrio gcc)
     gnumake
     clang
     clang-tools
@@ -55,10 +55,10 @@ in
     libGL
     libGLU
     stdenv.cc.cc
-    xorg.libXi
-    xorg.libXtst
-    xorg.libXrender
-    xorg.libXScrnSaver
+    libxi
+    libxtst
+    libxrender
+    libxscrnsaver
     gtk3
     gdk-pixbuf
   ];

@@ -6,6 +6,9 @@ let
     libreoffice
     thunderbird
     wpsoffice
+
+    notion
+    obsidian
   ];
 in
 if isHomeManager then {

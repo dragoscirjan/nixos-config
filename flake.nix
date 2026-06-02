@@ -19,6 +19,16 @@
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin"; # Assuming Apple Silicon; change to x86_64-darwin if Intel
+
+      linuxPkgs = import nixpkgs {
+        system = linuxSystem;
+        config = {
+          allowUnfree = true;
+          permittedInsecurePackages = [
+            "openssl-1.1.1w"
+          ];
+        };
+      };
     in
     {
       # Group 1: NixOS Development Machines
@@ -43,37 +53,37 @@
       # Group 2: Non-NixOS Linux Machines (Standalone Home Manager)
       homeConfigurations = {
         "dragosc@tw-fedora" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-fedora/home.nix ];
         };
         "dragosc@tw-ubuntu" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-ubuntu/home.nix ];
         };
         "dragosc@tw-omarchy" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/tw-omarchy/home.nix ];
         };
         "dragosc@wsl-ubuntu" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/wsl-ubuntu/home.nix ];
         };
         "dragosc@wsl-fedora" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/wsl-fedora/home.nix ];
         };
         "dragosc@vm-ubuntu" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/vm-ubuntu/home.nix ];
         };
         "dragosc@vm-fedora" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${linuxSystem};
+          pkgs = linuxPkgs;
           extraSpecialArgs = { isHomeManager = true; };
           modules = [ ./hosts/linux/vm-fedora/home.nix ];
         };
@@ -85,18 +95,6 @@
           system = darwinSystem;
           specialArgs = { isHomeManager = false; };
           modules = [ ./hosts/darwin/Dragoss-MBP.lan/configuration.nix ];
-        };
-      };
-
-      homeConfigurations = {
-        # Tower workstation running Fedora (Home Manager only)
-        "tw-fedora" = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-            config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
-          };
-          modules = [ ./hosts/tw-fedora/home.nix ];
         };
       };
     };

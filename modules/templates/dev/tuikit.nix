@@ -9,7 +9,7 @@ let
 
     # Window Managers / Headless dev testing (GUI dependent)
     sway
-    xorg.xorgserver # Provides Xvfb
+    xorg-server # Provides Xvfb
     xvfb-run
     kdePackages.kwin # Provides kwin_wayland and kwin_x11
   ];

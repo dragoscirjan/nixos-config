@@ -20,6 +20,18 @@
     "openssl-1.1.1w"
   ];
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      rustdesk = prev.rustdesk.overrideAttrs (oldAttrs: {
+        cargoDeps = oldAttrs.cargoDeps.overrideAttrs (oldCargoDepsAttrs: {
+          vendorStaging = oldCargoDepsAttrs.vendorStaging.overrideAttrs (oldVendorStagingAttrs: {
+            outputHash = "sha256-HAKcu4tuF6Og9jxYn8DWGQCc2Dr6taxXk5x8gFEzHJg=";
+          });
+        });
+      });
+    })
+  ];
+
   # ── nix-ld (run pre-built binaries: mise tools, npx, etc.) ───────────────
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -39,15 +51,17 @@
     libdrm
     libxkbcommon
     pango
-    xorg.libX11
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXext
-    xorg.libXfixes
-    xorg.libXrandr
-    xorg.libxcb
+    libx11
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxrandr
+    libxcb
     mesa
     alsa-lib
+
+    tmate
   ];
 
   # ── Locale & keyboard ────────────────────────────────────────────────────
@@ -113,8 +127,8 @@
   ];
 
   # ── Base packages ─────────────────────────────────────────────────────────
-  environment.systemPackages = 
-    (import ../common/git.nix { inherit pkgs; }) ++ 
+  environment.systemPackages =
+    (import ../common/git.nix { inherit pkgs; }) ++
     (import ../common/common.nix { inherit pkgs; });
 
   # ── Fonts ─────────────────────────────────────────────────────────────────

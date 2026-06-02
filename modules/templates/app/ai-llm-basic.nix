@@ -9,12 +9,13 @@ let
     koboldcpp
     llama-cpp
     ollama
-    whisper-cpp
+    (lib.lowPrio whisper-cpp)
   ]
   # AMD GPU extras: ROCm runtime + OpenCL (clr = Common Language Runtime)
   ++ lib.optionals cfg.gpuAmd [
     rocmPackages.rocm-runtime
     rocmPackages.clr
+    amdgpu_top
   ]
   # Nvidia GPU extras
   ++ lib.optionals cfg.gpuNvidia [

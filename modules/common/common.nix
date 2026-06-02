@@ -44,4 +44,7 @@
   rar
   unar
 
+  # Networking
+  net-tools
+
 ]
