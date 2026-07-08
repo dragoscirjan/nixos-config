@@ -6,8 +6,10 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.username = "dragosc";
-  home.homeDirectory = "/Users/dragosc";
+  # home.username / home.homeDirectory are intentionally NOT set here.
+  # home-manager's nix-darwin integration derives them directly from
+  # users.users.dragosc.{name,home} (see modules/darwin/common.nix) at
+  # normal priority; setting them again here would conflict.
   home.stateVersion = "24.11"; # Ensure this matches your installation version
 
   programs.zsh.enable = true;

@@ -12,6 +12,18 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
+  # home-manager's nix-darwin integration derives home.username/homeDirectory
+  # directly from users.users.<name>.{name,home} (normal priority, not
+  # mkDefault — see home-manager's nixos/common.nix). nix-darwin's
+  # users.users.<name>.home defaults to null, so it MUST be declared here or
+  # home-manager's eval fails with "not of type absolute path". Do not also
+  # set home.username/home.homeDirectory in modules/darwin/home.nix — that
+  # would conflict with this at the same priority.
+  users.users.dragosc = {
+    name = "dragosc";
+    home = "/Users/dragosc";
+  };
+
   programs.zsh.enable = true;
 
   # nix-darwin's own release-compatibility version, NOT a macOS version.
