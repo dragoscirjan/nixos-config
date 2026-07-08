@@ -13,9 +13,13 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, nix-homebrew, ... }@inputs:
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin"; # Assuming Apple Silicon; change to x86_64-darwin if Intel
@@ -91,10 +95,21 @@
 
       # Group 3: macOS
       darwinConfigurations = {
-        "Dragoss-MBP" = nix-darwin.lib.darwinSystem {
+        mac-m1 = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
-          specialArgs = { isHomeManager = false; };
-          modules = [ ./hosts/darwin/Dragoss-MBP.lan/configuration.nix ];
+          specialArgs = { isHomeManager = false; inherit home-manager; };
+          modules = [
+            nix-homebrew.darwinModules.nix-homebrew
+            ./hosts/darwin/mac-m1/configuration.nix
+          ];
+        };
+        mac-m5 = nix-darwin.lib.darwinSystem {
+          system = darwinSystem;
+          specialArgs = { isHomeManager = false; inherit home-manager; };
+          modules = [
+            nix-homebrew.darwinModules.nix-homebrew
+            ./hosts/darwin/mac-m5/configuration.nix
+          ];
         };
       };
     };
