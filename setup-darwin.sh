@@ -92,12 +92,13 @@ if [ ! -d "hosts/darwin/$HOST" ]; then
     error "Unknown host '$HOST'. Expected a directory at hosts/darwin/$HOST (available: $(ls hosts/darwin))."
 fi
 
-# 4. Bootstrap via nix-darwin.
+# 4. Bootstrap via nix-darwin. System activation must be run as root
+#    (recent nix-darwin versions no longer self-elevate via internal sudo).
 info "Setting up macOS host '$HOST' via nix-darwin..."
 if ! command -v darwin-rebuild &> /dev/null; then
-    nix run nix-darwin -- switch --flake ".#$HOST"
+    sudo nix run nix-darwin -- switch --flake ".#$HOST"
 else
-    darwin-rebuild switch --flake ".#$HOST"
+    sudo darwin-rebuild switch --flake ".#$HOST"
 fi
 
 # 5. Homebrew is installed declaratively by nix-homebrew as part of the

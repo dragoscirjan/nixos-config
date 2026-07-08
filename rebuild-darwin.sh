@@ -23,4 +23,11 @@ echo "Updating Nix flake inputs..."
 nix flake update
 
 echo "Running darwin-rebuild $ACTION for $HOST..."
-darwin-rebuild "$ACTION" --flake ".#$HOST"
+# "switch" performs system activation, which recent nix-darwin versions
+# require to be run as root (no more internal self-elevating sudo).
+# "build" only builds the derivation and doesn't need root.
+if [[ "$ACTION" == "switch" ]]; then
+  sudo darwin-rebuild "$ACTION" --flake ".#$HOST"
+else
+  darwin-rebuild "$ACTION" --flake ".#$HOST"
+fi
