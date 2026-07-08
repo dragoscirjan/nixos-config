@@ -27,7 +27,10 @@ echo "Running darwin-rebuild $ACTION for $HOST..."
 # require to be run as root (no more internal self-elevating sudo).
 # "build" only builds the derivation and doesn't need root.
 if [[ "$ACTION" == "switch" ]]; then
-  sudo darwin-rebuild "$ACTION" --flake ".#$HOST"
+  # sudo's secure_path often excludes /run/current-system/sw/bin, where
+  # nix-darwin symlinks darwin-rebuild -- preserve the caller's PATH so
+  # sudo can still find it (avoids "sudo: darwin-rebuild: command not found").
+  sudo -E env "PATH=$PATH" darwin-rebuild "$ACTION" --flake ".#$HOST"
 else
   darwin-rebuild "$ACTION" --flake ".#$HOST"
 fi

@@ -94,11 +94,14 @@ fi
 
 # 4. Bootstrap via nix-darwin. System activation must be run as root
 #    (recent nix-darwin versions no longer self-elevate via internal sudo).
+#    sudo's secure_path often excludes /run/current-system/sw/bin (where
+#    nix-darwin symlinks darwin-rebuild) and Nix's own bin dirs, so we
+#    preserve the caller's PATH into the sudo'd process.
 info "Setting up macOS host '$HOST' via nix-darwin..."
 if ! command -v darwin-rebuild &> /dev/null; then
-    sudo nix run nix-darwin -- switch --flake ".#$HOST"
+    sudo -E env "PATH=$PATH" nix run nix-darwin -- switch --flake ".#$HOST"
 else
-    sudo darwin-rebuild switch --flake ".#$HOST"
+    sudo -E env "PATH=$PATH" darwin-rebuild switch --flake ".#$HOST"
 fi
 
 # 5. Homebrew is installed declaratively by nix-homebrew as part of the
