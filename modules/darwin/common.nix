@@ -9,7 +9,15 @@
     home-manager.darwinModules.home-manager
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # Nix itself is installed/managed by the Determinate Systems installer
+  # (setup-darwin.sh uses it), which runs its own daemon and manages
+  # /etc/nix/nix.custom.conf. nix-darwin detects this and refuses to also
+  # manage the Nix installation ("Determinate detected, aborting
+  # activation") unless we explicitly hand that responsibility off.
+  # Determinate already ships flakes + nix-command enabled by default, so
+  # nix.settings.experimental-features is neither needed nor honored here.
+  nix.enable = false;
+
   nixpkgs.config.allowUnfree = true;
 
   # home-manager's nix-darwin integration derives home.username/homeDirectory
