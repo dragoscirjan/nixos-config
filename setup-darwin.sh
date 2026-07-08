@@ -5,9 +5,10 @@
 #
 # This script bootstraps a Mac from scratch:
 # 1. Requires --host, validated against the hosts/darwin/* flake hosts
-# 2. Renames the physical machine (scutil) to match the chosen host,
+# 2. Installs the Nix package manager if missing (Determinate installer)
+# 3. Validates the current hostname against the chosen host, and renames
+#    the physical machine (scutil) only if it doesn't already match --
 #    since out-of-box Macs can share the same default hostname
-# 3. Installs the Nix package manager if missing (Determinate installer)
 # 4. Clones this flake repo if missing
 # 5. Bootstraps via nix-darwin (first run) or darwin-rebuild (subsequent runs)
 #    Homebrew itself is installed declaratively by nix-homebrew during this
@@ -50,8 +51,32 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
     error "This script is macOS-only. Use setup-nixos.sh or setup-linux.sh instead."
 fi
 
-# 1. Clone the repo first (needed to validate --host against hosts/darwin/*),
-#    unless it's already checked out.
+# 1. Install Nix if missing.
+if command -v nix &> /dev/null; then
+    success "Nix is already installed!"
+else
+    info "Installing Nix via the Determinate Systems installer..."
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+    success "Nix has been installed successfully."
+    warn "Restart your terminal (or source the Nix daemon script) before continuing if this is a fresh shell."
+fi
+
+# 2. Validate the current hostname against the chosen host; only rename if
+#    it doesn't already match (out-of-box Macs can share the same default
+#    hostname, so this can't be skipped, but it also shouldn't be blindly
+#    re-run every time).
+CURRENT_HOSTNAME="$(scutil --get HostName 2>/dev/null || hostname)"
+if [ "$CURRENT_HOSTNAME" = "$HOST" ]; then
+    success "Hostname already set to '$HOST'."
+else
+    info "Current hostname is '$CURRENT_HOSTNAME', setting it to '$HOST'..."
+    sudo scutil --set ComputerName "$HOST"
+    sudo scutil --set HostName "$HOST"
+    sudo scutil --set LocalHostName "$HOST"
+    success "Hostname set to '$HOST'."
+fi
+
+# 3. Clone the repo if missing (needed to validate --host against hosts/darwin/*).
 if [ ! -d "$CONFIG_DIR" ]; then
     if ! command -v git &> /dev/null; then
         error "git is required to clone the config repo but is not installed. Install Xcode Command Line Tools first: xcode-select --install"
@@ -65,22 +90,6 @@ cd "$CONFIG_DIR"
 
 if [ ! -d "hosts/darwin/$HOST" ]; then
     error "Unknown host '$HOST'. Expected a directory at hosts/darwin/$HOST (available: $(ls hosts/darwin))."
-fi
-
-# 2. Rename the physical Mac to match the chosen flake host.
-info "Setting hostname to '$HOST'..."
-sudo scutil --set ComputerName "$HOST"
-sudo scutil --set HostName "$HOST"
-sudo scutil --set LocalHostName "$HOST"
-
-# 3. Install Nix if missing.
-if command -v nix &> /dev/null; then
-    success "Nix is already installed!"
-else
-    info "Installing Nix via the Determinate Systems installer..."
-    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
-    success "Nix has been installed successfully."
-    warn "Restart your terminal (or source the Nix daemon script) before continuing if this is a fresh shell."
 fi
 
 # 4. Bootstrap via nix-darwin.
