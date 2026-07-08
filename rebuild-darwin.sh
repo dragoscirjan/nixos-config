@@ -26,11 +26,14 @@ echo "Running darwin-rebuild $ACTION for $HOST..."
 # "switch" performs system activation, which recent nix-darwin versions
 # require to be run as root (no more internal self-elevating sudo).
 # "build" only builds the derivation and doesn't need root.
+#
+# sudo's secure_path often excludes /run/current-system/sw/bin (where
+# nix-darwin symlinks darwin-rebuild) and PATH-forwarding via `env` can
+# still fail if `env` itself isn't on sudo's secure_path either. Resolve
+# the absolute path *before* elevating so sudo needs no PATH lookup at all.
+DARWIN_REBUILD="$(command -v darwin-rebuild)"
 if [[ "$ACTION" == "switch" ]]; then
-  # sudo's secure_path often excludes /run/current-system/sw/bin, where
-  # nix-darwin symlinks darwin-rebuild -- preserve the caller's PATH so
-  # sudo can still find it (avoids "sudo: darwin-rebuild: command not found").
-  sudo -E env "PATH=$PATH" darwin-rebuild "$ACTION" --flake ".#$HOST"
+  sudo "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST"
 else
-  darwin-rebuild "$ACTION" --flake ".#$HOST"
+  "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST"
 fi
