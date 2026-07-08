@@ -51,6 +51,14 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
     error "This script is macOS-only. Use setup-nixos.sh or setup-linux.sh instead."
 fi
 
+# Running this script (e.g. via ./setup-darwin.sh) is a non-login,
+# non-interactive shell, so it does NOT source /etc/zshrc/etc/bashrc --
+# which is where nix-darwin/Nix actually append their bin dirs to PATH for
+# your interactive shell. Make sure they're present here too, or `nix`/
+# `darwin-rebuild` won't be found even though they work fine when typed
+# directly in your terminal.
+export PATH="/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
 # 1. Install Nix if missing.
 if command -v nix &> /dev/null; then
     success "Nix is already installed!"

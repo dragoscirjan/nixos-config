@@ -17,6 +17,14 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
   exit 1
 fi
 
+# Running this script (e.g. via ./rebuild-darwin.sh) is a non-login,
+# non-interactive shell, so it does NOT source /etc/zshrc/etc/bashrc --
+# which is where nix-darwin actually appends its bin dirs to PATH for
+# your interactive shell. Make sure they're present here too, or
+# darwin-rebuild/nix won't be found even though they work fine when you
+# type them directly in your terminal.
+export PATH="/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
 HOST=$(scutil --get HostName 2>/dev/null || hostname)
 
 echo "Updating Nix flake inputs..."
@@ -31,7 +39,10 @@ echo "Running darwin-rebuild $ACTION for $HOST..."
 # nix-darwin symlinks darwin-rebuild) and PATH-forwarding via `env` can
 # still fail if `env` itself isn't on sudo's secure_path either. Resolve
 # the absolute path *before* elevating so sudo needs no PATH lookup at all.
-DARWIN_REBUILD="$(command -v darwin-rebuild)"
+if ! DARWIN_REBUILD="$(command -v darwin-rebuild)"; then
+  echo "Error: darwin-rebuild not found on PATH ($PATH). Has nix-darwin been bootstrapped yet? Run setup-darwin.sh first." >&2
+  exit 1
+fi
 if [[ "$ACTION" == "switch" ]]; then
   sudo "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST"
 else
