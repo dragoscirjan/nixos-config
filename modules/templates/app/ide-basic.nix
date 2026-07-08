@@ -1,9 +1,15 @@
 { config, pkgs, isHomeManager ? false, ... }:
 
 let
+  # Neovim ships different release tarball names per platform. This repo
+  # only ever targets Linux x86_64 or Apple Silicon (aarch64-darwin), so
+  # those are the only two variants handled here.
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  nvimAssetName = if isDarwin then "nvim-macos-arm64" else "nvim-linux-x86_64";
+
   # Determine install path based on environment
   # We now place Neovim in the local folder on both NixOS and Home Manager environments
-  nvimInstallDir = if isHomeManager then "$HOME/.local/opt/nvim-linux-x86_64" else "/home/dragosc/.local/opt/nvim-linux-x86_64";
+  nvimInstallDir = if isHomeManager then "$HOME/.local/opt/${nvimAssetName}" else "/home/dragosc/.local/opt/${nvimAssetName}";
   nvimBaseDir = if isHomeManager then "$HOME/.local/opt" else "/home/dragosc/.local/opt";
 
   sharedPackages = with pkgs; [
@@ -18,11 +24,11 @@ let
     mkdir -p ${nvimBaseDir}
     chmod 755 ${nvimBaseDir}
     echo "Fetching latest Neovim to ${nvimBaseDir}..."
-    if ${pkgs.curl}/bin/curl -f -sSL --connect-timeout 10 -o /tmp/nvim-linux-x86_64.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz; then
+    if ${pkgs.curl}/bin/curl -f -sSL --connect-timeout 10 -o /tmp/${nvimAssetName}.tar.gz https://github.com/neovim/neovim/releases/latest/download/${nvimAssetName}.tar.gz; then
       rm -rf ${nvimInstallDir}
-      PATH=${pkgs.gzip}/bin:$PATH ${pkgs.gnutar}/bin/tar -C ${nvimBaseDir} -xzf /tmp/nvim-linux-x86_64.tar.gz
+      PATH=${pkgs.gzip}/bin:$PATH ${pkgs.gnutar}/bin/tar -C ${nvimBaseDir} -xzf /tmp/${nvimAssetName}.tar.gz
       chmod -R 755 ${nvimInstallDir}
-      rm -f /tmp/nvim-linux-x86_64.tar.gz
+      rm -f /tmp/${nvimAssetName}.tar.gz
     else
       echo "Network unavailable or download failed. Keeping existing Neovim installation."
     fi

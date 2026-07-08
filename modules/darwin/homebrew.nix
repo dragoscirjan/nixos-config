@@ -18,7 +18,11 @@
   homebrew = {
     enable = true;
     taps = [ ];
-    brews = [ ];
+    # colima: macOS has no Linux kernel, so the Nix-provided docker/podman
+    # CLIs (modules/templates/app/virtualization.nix) need a real container
+    # runtime backend. colima provides that (lightweight Lima VM + Docker
+    # context), same role Docker Desktop/OrbStack would play.
+    brews = [ "colima" ];
     casks = [ ];
     onActivation.cleanup = "zap";
   };

@@ -12,10 +12,13 @@ let
   # own default cache path and quietly eating disk space).
   # NixOS (services.ollama) already defaults to this exact path; it is set
   # explicitly below for documentation/consistency rather than to change
-  # behavior. Home Manager contexts (Linux + Darwin) get the equivalent via
-  # OLLAMA_MODELS so a user-invoked `ollama` CLI shares the same cache as the
-  # system service would, instead of falling back to `~/.ollama/models`.
-  ollamaModelsDir = "/var/lib/ollama/models";
+  # behavior.
+  ollamaModelsDirNixos = "/var/lib/ollama/models";
+  # Home Manager contexts (Linux + Darwin) don't have a writable /var/lib —
+  # that path is owned by the NixOS ollama systemd service, not the user.
+  # Use a per-user location instead so a user-invoked `ollama` CLI has a
+  # single, consistent, writable cache regardless of host OS.
+  ollamaModelsDirHome = "$HOME/.ollama/models";
 
   sharedPackages = with pkgs; [
     koboldcpp
@@ -36,15 +39,13 @@ let
 in
 if isHomeManager then {
   home.packages = sharedPackages;
-  # NOTE: on Darwin this still points at a Linux-style /var/lib path since
-  # ollama itself defaults the same way cross-platform; if this ever needs to
-  # differ per-OS, override OLLAMA_MODELS in the consuming host file instead
-  # of editing this shared template.
-  home.sessionVariables.OLLAMA_MODELS = ollamaModelsDir;
+  # See ollamaModelsDirHome comment above — user-writable path, not the
+  # NixOS-service-owned /var/lib/ollama/models.
+  home.sessionVariables.OLLAMA_MODELS = ollamaModelsDirHome;
 } else {
   environment.systemPackages = sharedPackages;
 
   # ── Ollama service ─────────────────────────────────────────────────────────
   services.ollama.enable = true;
-  services.ollama.modelsDir = ollamaModelsDir;
+  services.ollama.modelsDir = ollamaModelsDirNixos;
 }
