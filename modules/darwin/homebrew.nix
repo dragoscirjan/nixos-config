@@ -23,7 +23,7 @@
     # runtime backend. colima provides that (lightweight Lima VM + Docker
     # context), same role Docker Desktop/OrbStack would play.
     brews = [ "colima" ];
-    casks = [ ];
+    casks = import ./casks.nix;
     onActivation.cleanup = "zap";
   };
 }
