@@ -87,5 +87,9 @@ in
   # modules/templates/app/ide-basic.nix).
   home.activation.installNeovimLatest = ideBasic.home.activation.installNeovimLatest;
 
+  # Pre-create the shared GGUF models folder for llama-cpp/koboldcpp (see
+  # modules/templates/app/ai-llm-basic.nix).
+  home.activation.ensureLlamaModelsDir = aiLlmBasic.home.activation.ensureLlamaModelsDir;
+
   programs.home-manager.enable = true;
 }
