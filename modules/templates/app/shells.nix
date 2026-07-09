@@ -28,7 +28,17 @@ let
 
   # Idempotent: only clones if the chezmoi source dir doesn't already exist,
   # then always re-applies (safe/no-op if nothing changed).
+  #
+  # chezmoi shells out to `git` for its .git-managed source dir (init,
+  # and any per-file git-managed template hooks). Home Manager activation
+  # scripts (and the NixOS systemd service below) run with a minimal,
+  # sanitized PATH that does NOT include git even if it's installed
+  # elsewhere on the system -- confirmed via a live failure: "chezmoi:
+  # .config/nvim: exec: git: executable file not found in $PATH" despite
+  # git being on the interactive shell's PATH. Prepend pkgs.git explicitly
+  # rather than relying on the ambient PATH.
   chezmoiInitScript = pkgs.writeShellScript "chezmoi-init" ''
+    export PATH="${pkgs.git}/bin:$PATH"
     if [ ! -d "$HOME/.local/share/chezmoi/.git" ]; then
       ${pkgs.chezmoi}/bin/chezmoi init ${dotfilesUrl}
     fi
