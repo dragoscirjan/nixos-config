@@ -92,6 +92,14 @@ in
   # modules/templates/app/ai-llm-basic.nix).
   home.activation.ensureLlamaModelsDir = aiLlmBasic.home.activation.ensureLlamaModelsDir;
 
+  # Synergy 3 does not have a Homebrew cask or a Darwin nixpkgs package.
+  # Install the vendor-supplied Apple Silicon app when it is not present.
+  home.activation.installSynergy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [[ ! -d "/Applications/Synergy.app" ]]; then
+      run ${./../../install-synergy.sh}
+    fi
+  '';
+
   # chezmoi: init/apply dotfiles on first Home Manager activation (see
   # modules/templates/app/shells.nix; GITHUB_USERNAME defaults to
   # dragoscirjan there).

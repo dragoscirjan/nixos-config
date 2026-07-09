@@ -32,6 +32,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 # matching Flatpak URL in modules/nixos/remote-control.nix) together.
 SYNERGY_VERSION="3.6.3"
 BASE_URL="https://symless.com/synergy/download/package/synergy-personal-v3"
+DOWNLOAD_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0UGFja2FnZUlkIjo2NDIsInVzZXJJZCI6Mjc4MzksImlhdCI6MTc3Njc5NjI5Mn0.wajXhDZOuLBPhi9S27LNf1CrIOP5UbaZ2O20X0-Vo8A"
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -92,7 +93,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     if [[ "$ARCH" != "arm64" ]]; then
         error "Synergy 3 for macOS is only published for Apple Silicon (arm64). Detected: $ARCH."
     fi
-    install_macos "$BASE_URL/macos-12.0/synergy-${SYNERGY_VERSION}-macos-arm64.dmg"
+    install_macos "https://symless.com/synergy/api/download/synergy-${SYNERGY_VERSION}-macos-arm64.dmg?token=${DOWNLOAD_TOKEN}"
     success "Synergy $SYNERGY_VERSION installed to /Applications."
     exit 0
 fi
