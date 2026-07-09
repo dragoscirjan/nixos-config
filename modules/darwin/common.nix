@@ -4,16 +4,14 @@
 { pkgs, lib, home-manager, mac-app-util, ... }:
 
 {
-  # Nix-installed GUI .app bundles (blender, obsidian, thunderbird, the
-  # JetBrains IDEs, vscode, etc.) live in the Nix store and are otherwise
-  # invisible to Spotlight/Launchpad/Finder. mac-app-util symlinks them into
-  # ~/Applications/Home Manager Apps (via the home-manager module wired
-  # below in modules/darwin/home.nix) and keeps Dock pins pointing at the
-  # right store path across rebuilds (via this darwin module).
+  # mac-app-util.darwinModules.default is already wired in flake.nix's
+  # darwinSystem modules list (alongside nix-homebrew.darwinModules), not
+  # re-imported here -- importing it in both places caused a duplicate
+  # option declaration error ("services.mac-app-util.enable ... already
+  # declared").
   imports = [
     ./homebrew.nix
     home-manager.darwinModules.home-manager
-    mac-app-util.darwinModules.default
   ];
 
   # Nix itself is installed/managed by the Determinate Systems installer
