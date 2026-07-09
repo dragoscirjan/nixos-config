@@ -6,9 +6,15 @@ set -euo pipefail
 # which darwin-rebuild does not implement -- only switch/build/check/
 # activate/rollback are valid subcommands).
 ACTION=${1:-switch}
+UPDATE_LOCK=${2:-}
 
 if [[ "$ACTION" != "switch" && "$ACTION" != "build" ]]; then
   echo "Error: Invalid action '$ACTION'. Only 'switch' or 'build' are allowed." >&2
+  exit 1
+fi
+
+if [[ -n "$UPDATE_LOCK" && "$UPDATE_LOCK" != "--update" ]]; then
+  echo "Error: Invalid option '$UPDATE_LOCK'. Supported: --update" >&2
   exit 1
 fi
 
@@ -27,8 +33,14 @@ export PATH="/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:$HOM
 
 HOST=$(scutil --get HostName 2>/dev/null || hostname)
 
-echo "Updating Nix flake inputs..."
-nix flake update
+# flake.lock is now committed to the repo (shared, tested pins across
+# machines) -- do NOT rewrite it on every rebuild. Only update it when
+# explicitly asked via --update, and never let darwin-rebuild itself
+# silently rewrite it either (--no-write-lock-file).
+if [[ "$UPDATE_LOCK" == "--update" ]]; then
+  echo "Updating flake.lock before rebuild..."
+  nix flake update
+fi
 
 echo "Running darwin-rebuild $ACTION for $HOST..."
 # "switch" performs system activation, which recent nix-darwin versions
@@ -44,7 +56,7 @@ if ! DARWIN_REBUILD="$(command -v darwin-rebuild)"; then
   exit 1
 fi
 if [[ "$ACTION" == "switch" ]]; then
-  sudo "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST"
+  sudo "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST" --no-write-lock-file
 else
-  "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST"
+  "$DARWIN_REBUILD" "$ACTION" --flake ".#$HOST" --no-write-lock-file
 fi
