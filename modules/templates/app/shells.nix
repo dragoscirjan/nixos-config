@@ -16,12 +16,13 @@ let
     autojump
     chezmoi
     oh-my-posh
-    
+
     # Alternate Shells
     fish
     nushell
     powershell
     zsh
+    shellcheck
   ];
 
   dotfilesUrl = "https://github.com/${githubUsername}/dotfiles";
@@ -78,12 +79,12 @@ if isHomeManager then {
     description = "Initialise chezmoi dotfiles";
     wantedBy = [ "default.target" ];
     after = [ "network-online.target" ];
-    
+
     # Ensure this service ONLY runs for the dragosc user session
     unitConfig = {
       ConditionUser = "dragosc";
     };
-    
+
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;

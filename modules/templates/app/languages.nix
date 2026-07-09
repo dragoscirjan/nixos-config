@@ -12,10 +12,18 @@ let
     clang-tools
     llvmPackages.lld
 
+    # DotNet
+    dotnet-sdk
+
     # Go
     go
     gopls
     hugo
+
+    # Godot
+    godot
+    gdscript-formatter
+    blender
 
     # JavaScript / TypeScript
     bun
@@ -41,6 +49,8 @@ let
 
     # Java
     jdk
+    kotlin
+    groovy
   ];
 in
 {

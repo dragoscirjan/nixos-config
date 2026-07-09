@@ -1,6 +1,7 @@
 # Shared git tools list
 { pkgs }: with pkgs; [
   git
+  git-lfs
   gh
   glab
   forgejo-cli

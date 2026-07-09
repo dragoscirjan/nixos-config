@@ -27,9 +27,10 @@
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin"; # Assuming Apple Silicon; change to x86_64-darwin if Intel
+      synergyVersion = "3.6.3";
 
-      linuxPkgs = import nixpkgs {
-        system = linuxSystem;
+      pkgsFor = system: import nixpkgs {
+        inherit system;
         config = {
           allowUnfree = true;
           permittedInsecurePackages = [
@@ -37,23 +38,28 @@
           ];
         };
       };
+      linuxPkgs = pkgsFor linuxSystem;
+      darwinPkgs = pkgsFor darwinSystem;
+      installSynergy = pkgs: pkgs.writeShellScriptBin "install-synergy" ''
+        exec ${pkgs.bash}/bin/bash ${./install-synergy.sh} ${synergyVersion} "$@"
+      '';
     in
     {
       # Group 1: NixOS Development Machines
       nixosConfigurations = {
         vm-nixos = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
-          specialArgs = { isHomeManager = false; };
+          specialArgs = { isHomeManager = false; inherit synergyVersion; };
           modules = [ ./hosts/nixos/vm-nixos/configuration.nix ];
         };
         tw-nixos = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
-          specialArgs = { isHomeManager = false; };
+          specialArgs = { isHomeManager = false; inherit synergyVersion; };
           modules = [ ./hosts/nixos/tw-nixos/configuration.nix ];
         };
         lp-nixos-mariac = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
-          specialArgs = { isHomeManager = false; };
+          specialArgs = { isHomeManager = false; inherit synergyVersion; };
           modules = [ ./hosts/nixos/lp-nixos-mariac/configuration.nix ];
         };
       };
@@ -62,37 +68,37 @@
       homeConfigurations = {
         "dragosc@tw-fedora" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/tw-fedora/home.nix ];
         };
         "dragosc@tw-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/tw-ubuntu/home.nix ];
         };
         "dragosc@tw-omarchy" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/tw-omarchy/home.nix ];
         };
         "dragosc@wsl-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/wsl-ubuntu/home.nix ];
         };
         "dragosc@wsl-fedora" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/wsl-fedora/home.nix ];
         };
         "dragosc@vm-ubuntu" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/vm-ubuntu/home.nix ];
         };
         "dragosc@vm-fedora" = home-manager.lib.homeManagerConfiguration {
           pkgs = linuxPkgs;
-          extraSpecialArgs = { isHomeManager = true; };
+          extraSpecialArgs = { isHomeManager = true; inherit synergyVersion; };
           modules = [ ./hosts/linux/vm-fedora/home.nix ];
         };
       };
@@ -101,7 +107,7 @@
       darwinConfigurations = {
         mac-m1 = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
-          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util; };
+          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util synergyVersion; };
           modules = [
             nix-homebrew.darwinModules.nix-homebrew
             mac-app-util.darwinModules.default
@@ -110,7 +116,7 @@
         };
         mac-m5 = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
-          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util; };
+          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util synergyVersion; };
           modules = [
             nix-homebrew.darwinModules.nix-homebrew
             mac-app-util.darwinModules.default
@@ -118,5 +124,12 @@
           ];
         };
       };
+
+      packages = {
+        "${linuxSystem}".install-synergy = installSynergy linuxPkgs;
+        "${darwinSystem}".install-synergy = installSynergy darwinPkgs;
+      };
+
+      lib.synergyVersion = synergyVersion;
     };
 }

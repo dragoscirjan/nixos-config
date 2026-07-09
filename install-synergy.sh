@@ -10,7 +10,7 @@
 # for the detected OS/distro directly from Symless and installs it via
 # the OS's own package manager.
 #
-# Usage: ./install-synergy.sh
+# Usage: ./install-synergy.sh VERSION
 #
 # Supported: Ubuntu 22.04/24.04/26.04, Debian 12/13, Fedora 42/43/44,
 # Arch Linux, macOS (Apple Silicon / arm64 only).
@@ -28,9 +28,12 @@ success() { echo -e "${GREEN}[OK]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
-# Single source of truth for the version we download — bump this (and the
-# matching Flatpak URL in modules/nixos/remote-control.nix) together.
-SYNERGY_VERSION="3.6.3"
+if [[ $# -lt 1 || -z "$1" ]]; then
+    error "Usage: $0 VERSION"
+fi
+
+SYNERGY_VERSION="$1"
+shift
 BASE_URL="https://symless.com/synergy/download/package/synergy-personal-v3"
 DOWNLOAD_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0UGFja2FnZUlkIjo2NDIsInVzZXJJZCI6Mjc4MzksImlhdCI6MTc3Njc5NjI5Mn0.wajXhDZOuLBPhi9S27LNf1CrIOP5UbaZ2O20X0-Vo8A"
 
