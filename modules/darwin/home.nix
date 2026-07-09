@@ -9,6 +9,14 @@
 let
   availableHere = lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform);
 
+  # `availableHere` only checks meta.platforms (cheap, eval-time) — it does
+  # NOT catch packages that evaluate/build a derivation fine but actually
+  # crash mid-build on real Darwin hardware. codeium is one such case
+  # (proprietary binary crashes during its build/fixup phase on
+  # aarch64-darwin, confirmed via a live `darwin-rebuild switch` failure
+  # with a SIGSEGV-style register dump) — drop it explicitly by name.
+  dropByName = names: lib.filter (p: !(builtins.elem (p.pname or p.name or "") names));
+
   ideBasic = import ../templates/app/ide-basic.nix { inherit pkgs config; isHomeManager = true; };
   aiLlmBasic = import ../templates/app/ai-llm-basic.nix { inherit pkgs lib config; isHomeManager = true; };
 in
@@ -54,7 +62,7 @@ in
     ++ (availableHere (import ../templates/app/terminals-basic.nix { inherit pkgs; isHomeManager = true; }).home.packages)
     ++ (import ../templates/app/terminals.nix { inherit pkgs; isHomeManager = true; }).home.packages
     ++ ideBasic.home.packages
-    ++ (availableHere (import ../templates/app/ide.nix { inherit pkgs; isHomeManager = true; }).home.packages)
+    ++ (dropByName [ "codeium" ] (availableHere (import ../templates/app/ide.nix { inherit pkgs; isHomeManager = true; }).home.packages))
     ++ (availableHere (import ../templates/app/design.nix { inherit pkgs; isHomeManager = true; }).home.packages)
     ++ (availableHere (import ../templates/app/media.nix { inherit pkgs; isHomeManager = true; }).home.packages)
     ++ (availableHere (import ../templates/app/office.nix { inherit pkgs; isHomeManager = true; }).home.packages)
