@@ -19,6 +19,7 @@ let
 
   ideBasic = import ../templates/app/ide-basic.nix { inherit pkgs config; isHomeManager = true; };
   aiLlmBasic = import ../templates/app/ai-llm-basic.nix { inherit pkgs lib config; isHomeManager = true; };
+  shells = import ../templates/app/shells.nix { inherit pkgs lib; isHomeManager = true; };
 in
 {
   # home.username / home.homeDirectory are intentionally NOT set here.
@@ -54,7 +55,7 @@ in
     (import ../common/git.nix { inherit pkgs; })
     ++ (availableHere (import ../common/common.nix { inherit pkgs; }))
     ++ (import ../common/fonts.nix { inherit pkgs; })
-    ++ (import ../templates/app/shells.nix { inherit pkgs lib; isHomeManager = true; }).home.packages
+    ++ shells.home.packages
     ++ (import ../templates/app/languages-basic.nix { inherit pkgs; isHomeManager = true; }).home.packages
     ++ (import ../templates/app/languages.nix { inherit pkgs; isHomeManager = true; }).home.packages
     ++ (availableHere (import ../templates/app/browsers-basic.nix { inherit pkgs; isHomeManager = true; }).home.packages)
@@ -90,6 +91,11 @@ in
   # Pre-create the shared GGUF models folder for llama-cpp/koboldcpp (see
   # modules/templates/app/ai-llm-basic.nix).
   home.activation.ensureLlamaModelsDir = aiLlmBasic.home.activation.ensureLlamaModelsDir;
+
+  # chezmoi: init/apply dotfiles on first Home Manager activation (see
+  # modules/templates/app/shells.nix; GITHUB_USERNAME defaults to
+  # dragoscirjan there).
+  home.activation.chezmoiInit = shells.home.activation.chezmoiInit;
 
   programs.home-manager.enable = true;
 }
