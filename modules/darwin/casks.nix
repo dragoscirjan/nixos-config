@@ -11,4 +11,11 @@
   "alfred" # launcher / productivity
   "rectangle" # window snapping/tiling
   "aldente" # battery charge-limiter
+
+  # Browsers: on NixOS, Chrome + Zen come via Flatpak (browsers.nix's
+  # NixOS-only branch), which doesn't exist/apply on Darwin. Homebrew
+  # casks are the equivalent here. Cask token for Zen is "zen" (not
+  # "zen-browser" — that's a former/aliased token).
+  "google-chrome"
+  "zen"
 ]
