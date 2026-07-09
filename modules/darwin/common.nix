@@ -1,12 +1,19 @@
 # nix-darwin system module — shared by mac-m1 and mac-m5. Both hosts import
 # this file as-is (identical config); only hostName/computerName/primaryUser
 # differ, set in each host's own hosts/darwin/<name>/configuration.nix.
-{ pkgs, lib, home-manager, ... }:
+{ pkgs, lib, home-manager, mac-app-util, ... }:
 
 {
+  # Nix-installed GUI .app bundles (blender, obsidian, thunderbird, the
+  # JetBrains IDEs, vscode, etc.) live in the Nix store and are otherwise
+  # invisible to Spotlight/Launchpad/Finder. mac-app-util symlinks them into
+  # ~/Applications/Home Manager Apps (via the home-manager module wired
+  # below in modules/darwin/home.nix) and keeps Dock pins pointing at the
+  # right store path across rebuilds (via this darwin module).
   imports = [
     ./homebrew.nix
     home-manager.darwinModules.home-manager
+    mac-app-util.darwinModules.default
   ];
 
   # Nix itself is installed/managed by the Determinate Systems installer
@@ -40,5 +47,9 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.extraSpecialArgs = { isHomeManager = true; };
+  # mac-app-util's home-manager module symlinks Nix-installed .app bundles
+  # into ~/Applications/Home Manager Apps, so Spotlight/Launchpad/Finder
+  # can find them (Nix packages otherwise only land in the store).
+  home-manager.sharedModules = [ mac-app-util.homeManagerModules.default ];
   home-manager.users.dragosc = import ./home.nix;
 }

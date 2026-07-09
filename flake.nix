@@ -17,9 +17,13 @@
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew";
     };
+
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, nix-homebrew, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, nix-homebrew, mac-app-util, ... }@inputs:
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin"; # Assuming Apple Silicon; change to x86_64-darwin if Intel
@@ -97,17 +101,19 @@
       darwinConfigurations = {
         mac-m1 = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
-          specialArgs = { isHomeManager = false; inherit home-manager; };
+          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util; };
           modules = [
             nix-homebrew.darwinModules.nix-homebrew
+            mac-app-util.darwinModules.default
             ./hosts/darwin/mac-m1/configuration.nix
           ];
         };
         mac-m5 = nix-darwin.lib.darwinSystem {
           system = darwinSystem;
-          specialArgs = { isHomeManager = false; inherit home-manager; };
+          specialArgs = { isHomeManager = false; inherit home-manager mac-app-util; };
           modules = [
             nix-homebrew.darwinModules.nix-homebrew
+            mac-app-util.darwinModules.default
             ./hosts/darwin/mac-m5/configuration.nix
           ];
         };
