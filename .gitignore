@@ -10,3 +10,4 @@ node_modules/
 .web_stash.db
 .env.ai
 .harnessctl/
+hosts/nixos/tw-nixos/grub-backgrounds/

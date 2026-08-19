@@ -1,2 +1,4 @@
 
 # bash rebuild.sh test
+
+nix flake check --no-build

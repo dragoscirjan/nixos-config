@@ -21,6 +21,11 @@
     mac-app-util = {
       url = "github:hraban/mac-app-util";
     };
+
+    elegant-grub2-themes = {
+      url = "github:vinceliuice/Elegant-grub2-themes";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, nix-homebrew, mac-app-util, ... }@inputs:
@@ -40,6 +45,7 @@
       };
       linuxPkgs = pkgsFor linuxSystem;
       darwinPkgs = pkgsFor darwinSystem;
+      elegantGrubThemeSource = inputs.elegant-grub2-themes.packages.${linuxSystem}.default;
       installSynergy = pkgs: pkgs.writeShellScriptBin "install-synergy" ''
         exec ${pkgs.bash}/bin/bash ${./install-synergy.sh} ${synergyVersion} "$@"
       '';
@@ -54,7 +60,7 @@
         };
         tw-nixos = nixpkgs.lib.nixosSystem {
           system = linuxSystem;
-          specialArgs = { isHomeManager = false; inherit synergyVersion; };
+          specialArgs = { isHomeManager = false; inherit elegantGrubThemeSource synergyVersion; };
           modules = [ ./hosts/nixos/tw-nixos/configuration.nix ];
         };
         lp-nixos-mariac = nixpkgs.lib.nixosSystem {

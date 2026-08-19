@@ -416,6 +416,36 @@ boot.loader.systemd-boot.enable = true;
 boot.loader.efi.canTouchEfiVariables = true;
 ```
 
+`tw-nixos` uses UEFI GRUB instead because Windows has a separate EFI System
+Partition on another drive. Its current disk layout is:
+
+| OS | Device | Partitions | Stable identifiers |
+|---|---|---|---|
+| NixOS | `/dev/nvme0n1` | EFI: `p1`; root: `p2` | EFI UUID: `39AD-76D3`; root UUID: `0e74897c-1a94-456e-a690-f9faa46a53d2` |
+| Windows | `/dev/nvme1n1` | EFI: `p1`; Windows: `p3`; recovery: `p4` | EFI UUID: `08B4-6E26` |
+
+The host configuration chainloads
+`/EFI/Microsoft/Boot/bootmgfw.efi` by the Windows EFI filesystem UUID. The
+`/dev/nvme*` names above document the observed layout only; configuration must
+use UUIDs because kernel device names can change when hardware is reordered.
+
+Only `tw-nixos` uses the pinned Elegant GRUB2 theme. It is configured as Wave,
+Window, dark, and left-aligned (column 1, row 3 in the upstream preview) for the
+tower's LG UltraGear display at its native 3440x1440 resolution. Elegant's logo
+and branding overlays are disabled. Other NixOS hosts, standalone Home Manager,
+and nix-darwin configurations are not affected.
+
+Custom tower backgrounds belong in
+`hosts/nixos/tw-nixos/grub-backgrounds/`. Supported lowercase extensions are
+`.jpg`, `.jpeg`, `.png`, and `.webp`. Files are sorted by name and
+the local calendar day's epoch-day number modulo the image count selects one
+reproducibly. A systemd service runs at startup and daily to prepare that image
+for the next GRUB boot; adding or removing images adjusts the modulo without a
+configuration change. Each source is center-cropped without stretching and
+composited into the left pane of the centered Window card, while a blurred copy
+fills the screen behind it. Only the generated 3440x1440 backgrounds and theme
+are installed for GRUB, not the complete source-image directory.
+
 **Legacy BIOS Systems:**
 ```nix
 boot.loader.grub.enable = true;
