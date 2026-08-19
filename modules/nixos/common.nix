@@ -61,7 +61,6 @@
     mesa
     alsa-lib
 
-    tmate
   ];
 
   # ── Locale & keyboard ────────────────────────────────────────────────────
@@ -129,7 +128,8 @@
   # ── Base packages ─────────────────────────────────────────────────────────
   environment.systemPackages =
     (import ../common/git.nix { inherit pkgs; }) ++
-    (import ../common/common.nix { inherit pkgs; });
+    (import ../common/common.nix { inherit pkgs; }) ++
+    [ pkgs.simple-scan ];
 
   # ── Fonts ─────────────────────────────────────────────────────────────────
   fonts.packages = import ../common/fonts.nix { inherit pkgs; };

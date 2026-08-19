@@ -46,5 +46,6 @@
 
   # Networking
   net-tools
+  tmate
 
 ]
