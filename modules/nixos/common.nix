@@ -1,6 +1,6 @@
 # Base template — imported by every host
 # Provides: core nix config, locale, user, KDE Plasma, PipeWire, SSH, flatpak, base packages, fonts, chezmoi init
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
