@@ -9,12 +9,13 @@
   home.sessionPath = [ "$HOME/.local/bin" ];
 
   # Base system packages for all headless Linux environments
-  home.packages = 
-    (import ../common/git.nix { inherit pkgs; }) ++ 
-    (import ../common/common.nix { inherit pkgs; }) ++ 
-    (import ../common/ai-mcps.nix { inherit pkgs; }) ++ 
-    (import ../common/fonts.nix { inherit pkgs; });
-  
+  home.packages =
+    (import ../common/git.nix { inherit pkgs; }) ++
+    (import ../common/common.nix { inherit pkgs; }) ++
+    (import ../common/ai-mcps.nix { inherit pkgs; }) ++
+    (import ../common/fonts.nix { inherit pkgs; }) ++
+    [ pkgs.simple-scan ];
+
   # Tell fontconfig to discover fonts installed in user profile
   fonts.fontconfig.enable = true;
 
