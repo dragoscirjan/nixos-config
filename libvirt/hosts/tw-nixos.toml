@@ -1,0 +1,16 @@
+[defaults]
+memory_mib = 8192
+vcpus = 8
+network = "default"
+machine = "q35"
+disk_bus = "sata"
+video = "virtio"
+
+[ventoy]
+volume_label = "Ventoy"
+
+[vms.fedora]
+disk = "/dev/disk/by-id/ata-Crucial_CT500MX200SSD1_16031187E9E5"
+
+[vms.omarchy]
+disk = "/dev/disk/by-id/ata-M4-CT256M4SSD1_000000001248091FAF55"
