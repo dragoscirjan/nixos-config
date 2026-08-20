@@ -117,6 +117,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ../../../libvirt/nixos-module.nix
     ../../../modules/nixos/common.nix
     ../../../modules/templates/app/ide.nix
     ../../../modules/templates/app/browsers.nix
