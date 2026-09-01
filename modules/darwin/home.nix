@@ -28,7 +28,8 @@ in
   # normal priority; setting them again here would conflict.
   home.stateVersion = "24.11"; # Ensure this matches your installation version
 
-  programs.zsh.enable = true;
+  # Zsh and Bash dotfiles are owned by chezmoi; enabling Home Manager's
+  # Zsh module would generate ~/.zshrc and conflict with that ownership.
   programs.fish.enable = true;
 
   home.sessionPath = [ "$HOME/.local/bin" ];

@@ -44,9 +44,6 @@
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
-  # Keep pre-existing dotfiles (including the chezmoi-managed ~/.zshrc)
-  # instead of aborting activation when Home Manager owns the same path.
-  home-manager.backupFileExtension = "hm-backup";
   home-manager.extraSpecialArgs = { isHomeManager = true; };
   # mac-app-util's home-manager module symlinks Nix-installed .app bundles
   # into ~/Applications/Home Manager Apps, so Spotlight/Launchpad/Finder
