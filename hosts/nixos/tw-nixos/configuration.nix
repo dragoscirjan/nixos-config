@@ -202,6 +202,15 @@ in
     hplip # hp-setup tool for HP printer configuration
   ];
 
+  # Smart-card middleware for certificate-based authentication and signing.
+  services.pcscd.enable = true;
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0529", ATTR{idProduct}=="0620", GROUP="pcscd", MODE="0660"
+  '';
+  environment.etc."firefox/policies/policies.json".text = builtins.toJSON {
+    policies.SecurityDevices.Add."OpenSC certSIGN" = "${pkgs.opensc}/lib/opensc-pkcs11.so";
+  };
+
   # ── Bluetooth ─────────────────────────────────────────────────────────────
   hardware.bluetooth = {
     enable = true;
