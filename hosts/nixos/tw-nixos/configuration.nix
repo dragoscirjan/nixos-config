@@ -200,6 +200,7 @@ in
   environment.systemPackages = with pkgs; [
     system-config-printer # printer management GUI
     hplip # hp-setup tool for HP printer configuration
+    poppler-utils # provides pdfsig for validating PDF signatures
   ];
 
   # Smart-card middleware for certificate-based authentication and signing.
