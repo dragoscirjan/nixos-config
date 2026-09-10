@@ -34,7 +34,11 @@ COMMON_FLAGS=(--flake ".#$HOST" --option max-jobs 1 --no-write-lock-file)
 if [[ "$OS" == "Linux" ]]; then
   if [ -f /etc/NIXOS ]; then
     echo "Running nixos-rebuild for NixOS..."
-    sudo nixos-rebuild "$ACTION" "${COMMON_FLAGS[@]}"
+    NIXOS_FLAGS=("${COMMON_FLAGS[@]}")
+    if [[ "$HOST" == "tw-nixos" ]]; then
+      NIXOS_FLAGS+=(--install-bootloader)
+    fi
+    sudo nixos-rebuild "$ACTION" "${NIXOS_FLAGS[@]}"
   else
     echo "Running home-manager for standalone Linux..."
     # home-manager doesn't use sudo to switch user profiles
