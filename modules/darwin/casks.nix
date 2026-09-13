@@ -18,4 +18,9 @@
   # "zen-browser" — that's a former/aliased token).
   "google-chrome"
   "zen"
+
+  # Ghostty is Linux-only in this flake's nixpkgs pin, so install the
+  # native macOS app via Homebrew instead of Home Manager's filtered
+  # terminals-basic package list.
+  "ghostty"
 ]

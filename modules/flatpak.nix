@@ -34,7 +34,21 @@ in
               if lib.hasPrefix "http://" pkg || lib.hasPrefix "https://" pkg then
                 ''
                   TMP_FLATPAK=$(mktemp --suffix=.flatpak)
-                  ${pkgs.curl}/bin/curl -sL "${pkg}" -o "$TMP_FLATPAK"
+                  if [[ "${pkg}" == https://symless.com/synergy/download/package/* ]]; then
+                    PACKAGE_PAGE=$(mktemp)
+                    ${pkgs.curl}/bin/curl -fsSL "${pkg}" -o "$PACKAGE_PAGE"
+                    TOKEN=$(${pkgs.gnugrep}/bin/grep -o 'token\\":\\"[^\\]*' "$PACKAGE_PAGE" | ${pkgs.coreutils}/bin/head -n1 | ${pkgs.gnused}/bin/sed 's/^token\\":\\"//')
+                    if [[ -z "$TOKEN" ]]; then
+                      echo "Could not extract Synergy download token from ${pkg}" >&2
+                      rm -f "$TMP_FLATPAK" "$PACKAGE_PAGE"
+                      exit 1
+                    fi
+                    FILE_NAME="$(${pkgs.coreutils}/bin/basename "${pkg}")"
+                    ${pkgs.curl}/bin/curl -fsSL "https://symless.com/synergy/api/download/$FILE_NAME?token=$TOKEN" -o "$TMP_FLATPAK"
+                    rm -f "$PACKAGE_PAGE"
+                  else
+                    ${pkgs.curl}/bin/curl -fsSL "${pkg}" -o "$TMP_FLATPAK"
+                  fi
                   ${pkgs.flatpak}/bin/flatpak install --system --noninteractive "$TMP_FLATPAK" || true
                   rm -f "$TMP_FLATPAK"
                 ''

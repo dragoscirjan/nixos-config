@@ -4,7 +4,7 @@
 # not assumed) — GUI apps with no Darwin support, or that fail their own
 # outPath eval (e.g. steam), are excluded; the real gap is filled by
 # Homebrew casks/brews (modules/darwin/homebrew.nix) instead.
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, synergyVersion, ... }:
 
 let
   availableHere = lib.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform);
@@ -94,10 +94,20 @@ in
   home.activation.ensureLlamaModelsDir = aiLlmBasic.home.activation.ensureLlamaModelsDir;
 
   # Synergy 3 does not have a Homebrew cask or a Darwin nixpkgs package.
-  # Install the vendor-supplied Apple Silicon app when it is not present.
+  # Install/update the vendor-supplied Apple Silicon app to the flake-pinned
+  # version. Checking only for /Applications/Synergy.app is insufficient
+  # because an older app bundle would otherwise never be upgraded.
   home.activation.installSynergy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [[ ! -d "/Applications/Synergy.app" ]]; then
-      run ${./../../install-synergy.sh}
+    expected_version=${lib.escapeShellArg synergyVersion}
+    installed_version=""
+
+    if [[ -f "/Applications/Synergy.app/Contents/Info.plist" ]]; then
+      installed_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "/Applications/Synergy.app/Contents/Info.plist" 2>/dev/null || true)"
+    fi
+
+    if [[ "$installed_version" != "$expected_version" ]]; then
+      local_installer="$HOME/Downloads/synergy-$expected_version-macos-arm64.dmg"
+      run env PATH=${lib.makeBinPath [ pkgs.curl pkgs.coreutils pkgs.gnugrep pkgs.gnused ]}:$PATH SYNERGY_INSTALLER_FILE="$local_installer" ${./../../install-synergy.sh} "$expected_version"
     fi
   '';
 

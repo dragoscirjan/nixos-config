@@ -35,7 +35,6 @@ fi
 SYNERGY_VERSION="$1"
 shift
 BASE_URL="https://symless.com/synergy/download/package/synergy-personal-v3"
-DOWNLOAD_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0UGFja2FnZUlkIjo2NDIsInVzZXJJZCI6Mjc4MzksImlhdCI6MTc3Njc5NjI5Mn0.wajXhDZOuLBPhi9S27LNf1CrIOP5UbaZ2O20X0-Vo8A"
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -43,8 +42,38 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 download() {
     local url="$1"
     local dest="$2"
+
+    if [[ -n "${SYNERGY_INSTALLER_FILE:-}" && -f "$SYNERGY_INSTALLER_FILE" ]]; then
+        info "Using local Synergy installer: $SYNERGY_INSTALLER_FILE"
+        cp "$SYNERGY_INSTALLER_FILE" "$dest"
+        return 0
+    fi
+
+    if [[ "$url" == https://symless.com/synergy/download/package/* ]]; then
+        local package_page="$TMP_DIR/synergy-download-page.html"
+        local file_name
+        local token
+
+        file_name="$(basename "$url")"
+        info "Fetching Synergy download page $url ..."
+        curl --proto '=https' --tlsv1.2 -fsSL -o "$package_page" "$url"
+        token="$(grep -o 'token\\":\\"[^\\]*' "$package_page" | head -n1 | sed 's/^token\\":\\"//')"
+        if [[ -z "$token" ]]; then
+            error "Could not extract Synergy download token from $url."
+        fi
+        url="https://symless.com/synergy/api/download/${file_name}?token=${token}"
+    fi
+
     info "Downloading $url ..."
-    curl --proto '=https' --tlsv1.2 -fsSL -o "$dest" "$url"
+    if ! curl --proto '=https' --tlsv1.2 -fsSL -o "$dest" "$url"; then
+        if [[ "${SYNERGY_SKIP_IF_UNAVAILABLE:-}" == "1" ]]; then
+            warn "Synergy installer is unavailable at the configured URL; skipping install/update."
+            warn "Download it manually from https://symless.com/synergy/download if the vendor URL/token changed."
+            warn "Then rerun with SYNERGY_INSTALLER_FILE pointing at the downloaded installer."
+            exit 0
+        fi
+        return 1
+    fi
 }
 
 install_deb() {
@@ -78,17 +107,17 @@ install_macos() {
     download "$url" "$dest"
     mkdir -p "$mount_point"
     info "Mounting disk image..."
-    hdiutil attach "$dest" -mountpoint "$mount_point" -nobrowse -quiet
+    /usr/bin/hdiutil attach "$dest" -mountpoint "$mount_point" -nobrowse -quiet
     local app
     app="$(find "$mount_point" -maxdepth 1 -name '*.app' | head -n1)"
     if [ -z "$app" ]; then
-        hdiutil detach "$mount_point" -quiet || true
+        /usr/bin/hdiutil detach "$mount_point" -quiet || true
         error "No .app bundle found inside the Synergy disk image."
     fi
     info "Copying $(basename "$app") to /Applications..."
     rm -rf "/Applications/$(basename "$app")"
     cp -R "$app" /Applications/
-    hdiutil detach "$mount_point" -quiet
+    /usr/bin/hdiutil detach "$mount_point" -quiet
 }
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -96,7 +125,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     if [[ "$ARCH" != "arm64" ]]; then
         error "Synergy 3 for macOS is only published for Apple Silicon (arm64). Detected: $ARCH."
     fi
-    install_macos "https://symless.com/synergy/api/download/synergy-${SYNERGY_VERSION}-macos-arm64.dmg?token=${DOWNLOAD_TOKEN}"
+    install_macos "${BASE_URL}/macos-12.0/synergy-${SYNERGY_VERSION}-macos-arm64.dmg"
     success "Synergy $SYNERGY_VERSION installed to /Applications."
     exit 0
 fi

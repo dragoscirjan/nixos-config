@@ -1,8 +1,7 @@
 { config, pkgs, synergyVersion, ... }:
 
 let
-  synergyFlatpakToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0UGFja2FnZUlkIjo2NDIsInVzZXJJZCI6Mjc4MzksImlhdCI6MTc3Njc5NjI5Mn0.wajXhDZOuLBPhi9S27LNf1CrIOP5UbaZ2O20X0-Vo8A";
-  synergyFlatpakUrl = "https://symless.com/synergy/api/download/synergy-${synergyVersion}-linux-noble-x86_64.flatpak?token=${synergyFlatpakToken}";
+  synergyFlatpakUrl = "https://symless.com/synergy/download/package/synergy-personal-v3/flatpak/synergy-${synergyVersion}-linux-noble-x86_64.flatpak";
 in
 {
   imports = [

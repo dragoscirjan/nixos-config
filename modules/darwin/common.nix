@@ -1,7 +1,7 @@
 # nix-darwin system module — shared by mac-m1 and mac-m5. Both hosts import
 # this file as-is (identical config); only hostName/computerName/primaryUser
 # differ, set in each host's own hosts/darwin/<name>/configuration.nix.
-{ pkgs, lib, home-manager, mac-app-util, ... }:
+{ pkgs, lib, home-manager, mac-app-util, synergyVersion, ... }:
 
 {
   # mac-app-util.darwinModules.default is already wired in flake.nix's
@@ -39,12 +39,18 @@
 
   programs.zsh.enable = true;
 
+  # On this Mac, nix-darwin failed to create /etc/pam.d/sudo_local as a
+  # managed symlink (Operation not permitted). Leave Apple's local PAM file
+  # unmanaged; sudo still works with macOS defaults, just without declarative
+  # Touch ID/Watch sudo customization from nix-darwin.
+  security.pam.services.sudo_local.enable = false;
+
   # nix-darwin's own release-compatibility version, NOT a macOS version.
   system.stateVersion = 4;
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
-  home-manager.extraSpecialArgs = { isHomeManager = true; };
+  home-manager.extraSpecialArgs = { inherit synergyVersion; isHomeManager = true; };
   # mac-app-util's home-manager module symlinks Nix-installed .app bundles
   # into ~/Applications/Home Manager Apps, so Spotlight/Launchpad/Finder
   # can find them (Nix packages otherwise only land in the store).
