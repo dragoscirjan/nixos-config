@@ -11,11 +11,18 @@ let
   # via `args.githubUsername or ...` sidesteps that entirely.
   githubUsername = args.githubUsername or "dragoscirjan";
 
+  # IMPORTANT: Nix installs these tools but does not initialize them in any
+  # shell. Shell startup, ordering, and guards for autojump, atuin, and zoxide
+  # are owned by the chezmoi source template at
+  # ~/.local/share/chezmoi/.chezmoitemplates/dot_xshrc.sh. Do not add
+  # programs.* shell-init configuration for them here.
   sharedPackages = with pkgs; [
     # Shell environments & Prompts
     autojump
+    atuin
     chezmoi
     oh-my-posh
+    zoxide
 
     # Alternate Shells
     fish
@@ -57,17 +64,6 @@ if isHomeManager then {
   '';
 } else {
   environment.systemPackages = sharedPackages;
-
-  # autojump shell integration
-  programs.bash.interactiveShellInit = ''
-    source ${pkgs.autojump}/share/autojump/autojump.bash
-  '';
-  programs.zsh.interactiveShellInit = ''
-    source ${pkgs.autojump}/share/autojump/autojump.zsh
-  '';
-  programs.fish.interactiveShellInit = ''
-    source ${pkgs.autojump}/share/autojump/autojump.fish
-  '';
 
   # Clear oh-my-posh cache on rebuild to avoid broken Nix store paths
   system.activationScripts.clearOhMyPoshCache = ''

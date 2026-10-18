@@ -19,6 +19,8 @@ let
 
   ideBasic = import ../templates/app/ide-basic.nix { inherit pkgs config; isHomeManager = true; };
   aiLlmBasic = import ../templates/app/ai-llm-basic.nix { inherit pkgs lib config; isHomeManager = true; };
+  # Consume selected outputs explicitly instead of importing the whole module.
+  # Shell initialization is owned by chezmoi; see templates/app/shells.nix.
   shells = import ../templates/app/shells.nix { inherit pkgs lib; isHomeManager = true; };
 in
 {

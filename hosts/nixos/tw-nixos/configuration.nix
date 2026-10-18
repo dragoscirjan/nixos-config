@@ -184,6 +184,9 @@ in
     ../../../modules/nixos/ai-mcps.nix
   ];
 
+  programs.steam.enable = true;
+  hardware.graphics.enable32Bit = true;
+
   # ── Developer Projects ────────────────────────────────────────────────────
   devProjects.mcpTuikit = true;
 
