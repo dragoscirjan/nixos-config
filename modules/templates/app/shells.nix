@@ -12,13 +12,15 @@ let
   githubUsername = args.githubUsername or "dragoscirjan";
 
   # IMPORTANT: Nix installs these tools but does not initialize them in any
-  # shell. Shell startup, ordering, and guards for autojump, atuin, and zoxide
+  # shell. Shell startup, ordering, and guards for autojump, bash-preexec,
+  # atuin, and zoxide
   # are owned by the chezmoi source template at
   # ~/.local/share/chezmoi/.chezmoitemplates/dot_xshrc.sh. Do not add
   # programs.* shell-init configuration for them here.
   sharedPackages = with pkgs; [
     # Shell environments & Prompts
     autojump
+    bash-preexec
     atuin
     chezmoi
     oh-my-posh

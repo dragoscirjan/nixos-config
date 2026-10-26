@@ -232,6 +232,16 @@ in
   # ── Printing: HP network printer discovery ────────────────────────────────
   services.printing.browsing = true;
   services.printing.browsed.enable = true;
+
+  # Recover discovery after an unexpected exit, even if Avahi leaves its PID file.
+  systemd.services.avahi-daemon.serviceConfig = {
+    # Run with full privileges: Avahi's capability restrictions prevent root
+    # from removing a stale file in the avahi-owned runtime directory.
+    ExecStartPre = [ "+${pkgs.coreutils}/bin/rm -f /run/avahi-daemon/pid" ];
+    Restart = "always";
+    RestartSec = "3s";
+  };
+
   environment.systemPackages = with pkgs; [
     system-config-printer # printer management GUI
     hplip # hp-setup tool for HP printer configuration

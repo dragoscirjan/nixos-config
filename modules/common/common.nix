@@ -15,8 +15,10 @@
   jq
   yq
 
-  # Crypto
+  # Crypto / password store (keys and GitHub sync are managed separately)
   openssl
+  gnupg
+  pass
 
   # Shell environment
   go-task
