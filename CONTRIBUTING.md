@@ -2,6 +2,18 @@
 
 Welcome to the NixOS/Nix configuration repository. This document explains how the repository is structured, how our machines (hosts) are grouped by their feature sets, and the rationale behind the modular template system.
 
+Read this document before planning or performing an architecture, implementation, documentation, configuration, policy, or publication change.
+
+## Contribution Workflow
+
+1. Clarify ambiguous requirements and confirm shared understanding.
+2. Keep each change focused on one task.
+3. Follow the isolated-workspace configuration in `AGENTS.md` before changing repository state.
+4. Preserve the host grouping and feature-module architecture described below.
+5. Update documentation when behavior, policy, host support, or usage changes.
+6. Read and follow [`VALIDATION.md`](VALIDATION.md) before validating, committing, pushing, or publishing.
+7. Do not commit, push, open a pull request, merge, release, or apply a system configuration without explicit owner instruction.
+
 ## Hosts Grouped by Features
 
 Our hosts are categorized by the feature sets they provide. Rather than duplicating configurations, each host acts as a router that imports specific feature groups based on its real-world purpose:
@@ -65,11 +77,15 @@ Ask yourself: *Which feature group does this belong to?*
 ### 2. Modifying an Existing Host
 Edit `hosts/<os>/<hostname>/configuration.nix` (or `home.nix`). Add or remove the `imports = [ ... ]` lines corresponding to the feature templates you want that host to have.
 
-### 3. Applying Changes
-Because Nix Flakes track files via Git, **if you create a new file, you must `git add` it before building.**
+### 3. Validating and Applying Changes
+Because Nix Flakes track files via Git, **if you create a new file, you must `git add` it before evaluating or building it.**
 
-Apply via the local script:
+Read [`VALIDATION.md`](VALIDATION.md) and run the applicable non-mutating checks before applying a configuration. Applying is a separate, owner-authorized action. Use the script for the target platform:
+
 ```bash
-./rebuild.sh
+./rebuild-nixos.sh
+./rebuild-darwin.sh
+./rebuild-linux.sh
 ```
-*(Or use standard `nixos-rebuild switch --flake .#<host>` / `home-manager switch --flake .#<host>` commands).*
+
+Standard `nixos-rebuild`, `darwin-rebuild`, and `home-manager` commands remain available when their exact host and action are known. Do not apply a configuration unless the owner explicitly requests it.
