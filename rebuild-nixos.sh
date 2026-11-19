@@ -33,12 +33,18 @@ COMMON_FLAGS=(--flake ".#$HOST" --option max-jobs 1 --no-write-lock-file)
 
 if [[ "$OS" == "Linux" ]]; then
   if [ -f /etc/NIXOS ]; then
+    if (( EUID == 0 )) && [[ -n "${SUDO_USER:-}" ]]; then
+      echo "Error: Run this script as your normal user, without sudo." >&2
+      echo "nixos-rebuild will elevate only the activation step." >&2
+      exit 1
+    fi
+
     echo "Running nixos-rebuild for NixOS..."
     NIXOS_FLAGS=("${COMMON_FLAGS[@]}")
     if [[ "$HOST" == "tw-nixos" ]]; then
       NIXOS_FLAGS+=(--install-bootloader)
     fi
-    sudo nixos-rebuild "$ACTION" "${NIXOS_FLAGS[@]}"
+    nixos-rebuild "$ACTION" "${NIXOS_FLAGS[@]}" --sudo
   else
     echo "Running home-manager for standalone Linux..."
     # home-manager doesn't use sudo to switch user profiles

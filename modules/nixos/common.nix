@@ -129,7 +129,12 @@
   environment.systemPackages =
     (import ../common/git.nix { inherit pkgs; }) ++
     (import ../common/common.nix { inherit pkgs; }) ++
-    [ pkgs.simple-scan ];
+    [
+      pkgs.kdePackages.kmail
+      pkgs.kdePackages.kmail-account-wizard
+      pkgs.kdePackages.akonadi-import-wizard
+      pkgs.simple-scan
+    ];
 
   # ── Fonts ─────────────────────────────────────────────────────────────────
   fonts.packages = import ../common/fonts.nix { inherit pkgs; };

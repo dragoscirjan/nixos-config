@@ -274,6 +274,8 @@ This section provides a detailed list of packages installed with each profile, c
 | `mise`            |      ✅       |        ✅        |
 | `bat`             |      ✅       |        ✅        |
 | `autojump`        |      ✅       |        ✅        |
+| `atuin`           |      ✅       |        ✅        |
+| `zoxide`          |      ✅       |        ✅        |
 | `zsh`             |      ❌       |        ✅        |
 | `fish`            |      ❌       |        ✅        |
 | `nushell`         |      ❌       |        ✅        |

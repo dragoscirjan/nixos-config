@@ -4,6 +4,7 @@ let
   sharedPackages = with pkgs; [
     ghostty
     tmux
+    wl-clipboard
   ];
 in
 if isHomeManager then {
